@@ -5,6 +5,8 @@ class WorkoutsListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Text('Home'));
+    return Center(
+      child: Text('Workouts Screen', style: TextStyle(fontSize: 25)),
+    );
   }
 }
