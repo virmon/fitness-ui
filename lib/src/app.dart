@@ -18,6 +18,10 @@ class FitnessApp extends ConsumerWidget {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: Colors.black87,
+          indicatorColor: Colors.white10,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.black, // background (button) color

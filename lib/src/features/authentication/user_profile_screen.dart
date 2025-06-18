@@ -12,6 +12,18 @@ class UserProfileScreen extends ConsumerWidget {
 
     return ProfileScreen(
       providers: authProviders,
+      appBar: AppBar(
+        title: Text('Profile'),
+      ),
+      children: [
+        const Divider(),
+        Padding(
+          padding: const EdgeInsets.all(2),
+          child: AspectRatio(
+            aspectRatio: 1,
+          ),
+        ),
+      ],
     );
   }
 }

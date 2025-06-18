@@ -1,5 +1,6 @@
 import 'package:fitness_ui/src/features/authentication/auth_gate.dart';
 import 'package:fitness_ui/src/features/authentication/firebase_auth_repository.dart';
+import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
 import 'package:fitness_ui/src/routing/go_router_refresh_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -91,7 +92,8 @@ final goRouterProvider = Provider((ref) {
               GoRoute(
                 path: '/profile',
                 name: AppRoute.profile.name,
-                builder: (context, state) => const Placeholder(),
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: UserProfileScreen()),
               ),
             ],
           ),

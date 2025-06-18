@@ -5,8 +5,12 @@ class WorkoutsListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Workouts Screen', style: TextStyle(fontSize: 25)),
-    );
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Workouts'),
+        ),
+        body: Column(
+          children: [],
+        ));
   }
 }

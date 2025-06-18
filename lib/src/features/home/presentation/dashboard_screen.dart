@@ -1,5 +1,6 @@
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -8,34 +9,12 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text('Dashboard'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute<ProfileScreen>(
-                  builder: (context) => ProfileScreen(
-                    appBar: AppBar(
-                      title: const Text('User Profile'),
-                    ),
-                    actions: [
-                      SignedOutAction((context) {
-                        Navigator.of(context).pop();
-                      })
-                    ],
-                    children: [
-                      const Divider(),
-                      Padding(
-                        padding: const EdgeInsets.all(2),
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+              context.pushNamed(AppRoute.profile.name);
             },
           )
         ],
@@ -43,9 +22,7 @@ class DashboardScreen extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          children: [
-            const SignOutButton(),
-          ],
+          children: [],
         ),
       ),
     );
