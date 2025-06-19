@@ -28,6 +28,18 @@ class FitnessApp extends ConsumerWidget {
             foregroundColor: Colors.white, // foreground (text) color
           ),
         ),
+        tabBarTheme: TabBarThemeData(
+          indicatorColor: Colors.blueGrey,
+          splashFactory: NoSplash.splashFactory,
+          labelColor: Colors.white,
+          labelStyle: TextStyle(
+            fontSize: 18,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 16,
+            color: Colors.white38,
+          ),
+        ),
       ),
     );
   }
