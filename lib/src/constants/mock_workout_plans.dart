@@ -8,7 +8,7 @@ const mockWorkoutPlans = [
     exercises: [
       Exercise(
           id: '1',
-          title: 'Exercise1',
+          title: 'Squats',
           description: 'desc1',
           type: 'Weights',
           notes: '',
@@ -30,7 +30,7 @@ const mockWorkoutPlans = [
           ]),
       Exercise(
           id: '2',
-          title: 'Exercise1',
+          title: 'Squats with Barbell',
           description: 'desc1',
           type: 'Weights',
           notes: '',
@@ -52,7 +52,7 @@ const mockWorkoutPlans = [
           ]),
       Exercise(
           id: '3',
-          title: 'Exercise1',
+          title: 'Leg-raises',
           description: 'desc1',
           type: 'Weights',
           notes: '',
@@ -82,7 +82,7 @@ const mockWorkoutPlans = [
     exercises: [
       Exercise(
           id: '1',
-          title: 'Exercise1',
+          title: 'Sit-ups',
           description: 'desc1',
           type: 'Weights',
           notes: '',
@@ -112,7 +112,7 @@ const mockWorkoutPlans = [
     exercises: [
       Exercise(
           id: '1',
-          title: 'Exercise1',
+          title: 'Squats',
           description: 'desc1',
           type: 'Weights',
           notes: '',

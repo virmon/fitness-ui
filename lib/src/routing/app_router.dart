@@ -1,6 +1,7 @@
 import 'package:fitness_ui/src/features/authentication/auth_gate.dart';
 import 'package:fitness_ui/src/features/authentication/firebase_auth_repository.dart';
 import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
+import 'package:fitness_ui/src/features/workouts/presentation/workout_plan_screen.dart';
 import 'package:fitness_ui/src/routing/go_router_refresh_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,6 +25,7 @@ enum AppRoute {
   signIn,
   home,
   workouts,
+  workoutPlan,
   profile,
 }
 
@@ -78,12 +80,21 @@ final goRouterProvider = Provider((ref) {
             navigatorKey: _shellNavigatorWorkoutsKey,
             routes: [
               GoRoute(
-                path: '/workouts',
-                name: AppRoute.workouts.name,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: WorkoutsListScreen(),
-                ),
-              ),
+                  path: '/workouts',
+                  name: AppRoute.workouts.name,
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                        child: WorkoutsListScreen(),
+                      ),
+                  routes: [
+                    GoRoute(
+                      path: '/:id',
+                      name: AppRoute.workoutPlan.name,
+                      builder: (context, state) {
+                        final workoutPlanId = state.pathParameters['id'];
+                        return WorkoutPlanScreen(workoutPlanId: workoutPlanId);
+                      },
+                    ),
+                  ]),
             ],
           ),
           StatefulShellBranch(

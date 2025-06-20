@@ -28,25 +28,3 @@ class WorkoutsListScreen extends StatelessWidget {
     );
   }
 }
-
-class CategorySection extends StatelessWidget {
-  const CategorySection({super.key, required this.title});
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Placeholder(),
-        ),
-        Text(
-          title,
-          style: TextStyle(fontSize: 22),
-        ),
-      ],
-    );
-  }
-}
