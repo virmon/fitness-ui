@@ -1,19 +1,18 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
-import 'package:fitness_ui/src/features/workouts/data/workout_plans_repository.dart';
-import 'package:fitness_ui/src/features/workouts/domain/workout_plan.dart';
+import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
+import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class WorkoutPlanScreen extends StatelessWidget {
-  const WorkoutPlanScreen({super.key, required this.workoutPlanId});
-  final String? workoutPlanId;
+class RoutineDetailScreen extends StatelessWidget {
+  const RoutineDetailScreen({super.key, required this.routineId});
+  final String? routineId;
 
   @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
-        final workoutPlanValue =
-            ref.watch(workoutPlanFutureProvider(workoutPlanId!));
+        final routineValue = ref.watch(routineFutureProvider(routineId!));
 
         return Scaffold(
             appBar: AppBar(),
@@ -22,27 +21,27 @@ class WorkoutPlanScreen extends StatelessWidget {
                 Column(
                   children: [
                     AsyncValueWidget(
-                      value: workoutPlanValue,
-                      data: (workoutPlan) => workoutPlan == null
+                      value: routineValue,
+                      data: (routine) => routine == null
                           ? Text('No data')
                           : Center(
                               child: Column(
                                 children: [
                                   Image.asset(
-                                    'assets/image${workoutPlan.id}.jpg',
+                                    'assets/image${routine.id}.jpg',
                                     width: 400,
                                     height: 280,
                                   ),
                                   Column(
                                     children: [
                                       Text(
-                                        workoutPlan.title,
+                                        routine.title,
                                         style: TextStyle(
                                           fontSize: 22,
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
-                                      ExerciseItem(items: workoutPlan.exercises)
+                                      ExerciseItem(items: routine.exercises)
                                     ],
                                   )
                                 ],

@@ -1,7 +1,9 @@
-import 'package:fitness_ui/src/features/workouts/domain/workout_plan.dart';
+import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
+import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
+import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 
-const mockWorkoutPlans = [
-  WorkoutPlan(
+const mockRoutines = [
+  Routine(
     id: '1',
     title: 'My First Workout Plan',
     notes: '',
@@ -75,7 +77,7 @@ const mockWorkoutPlans = [
     ],
     isPrivate: false,
   ),
-  WorkoutPlan(
+  Routine(
     id: '2',
     title: 'My Awesome plan',
     notes: '',
@@ -105,7 +107,7 @@ const mockWorkoutPlans = [
     ],
     isPrivate: false,
   ),
-  WorkoutPlan(
+  Routine(
     id: '3',
     title: 'My Leg Day Plan',
     notes: '',
