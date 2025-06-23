@@ -1,14 +1,14 @@
 import 'package:fitness_ui/src/features/authentication/auth_gate.dart';
 import 'package:fitness_ui/src/features/authentication/firebase_auth_repository.dart';
 import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
-import 'package:fitness_ui/src/features/workouts/presentation/workout_plan_screen.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routine_detail_screen.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_list_screen.dart';
 import 'package:fitness_ui/src/routing/go_router_refresh_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitness_ui/src/features/Home/presentation/app_navigation_bar.dart';
 import 'package:fitness_ui/src/features/Home/presentation/dashboard_screen.dart';
-import 'package:fitness_ui/src/features/workouts/presentation/workouts_list_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorHomeKey = GlobalKey<NavigatorState>(
@@ -83,15 +83,15 @@ final goRouterProvider = Provider((ref) {
                   path: '/workouts',
                   name: AppRoute.workouts.name,
                   pageBuilder: (context, state) => const NoTransitionPage(
-                        child: WorkoutsListScreen(),
+                        child: RoutinesListScreen(),
                       ),
                   routes: [
                     GoRoute(
                       path: '/:id',
                       name: AppRoute.workoutPlan.name,
                       builder: (context, state) {
-                        final workoutPlanId = state.pathParameters['id'];
-                        return WorkoutPlanScreen(workoutPlanId: workoutPlanId);
+                        final routineId = state.pathParameters['id'];
+                        return RoutineDetailScreen(routineId: routineId);
                       },
                     ),
                   ]),

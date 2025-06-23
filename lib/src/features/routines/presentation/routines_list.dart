@@ -1,18 +1,19 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
-import 'package:fitness_ui/src/features/workouts/data/workout_plans_repository.dart';
-import 'package:fitness_ui/src/features/workouts/domain/workout_plan.dart';
+import 'package:fitness_ui/src/common/typography.dart';
+import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
+import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class WorkoutPlansList extends ConsumerWidget {
-  const WorkoutPlansList({super.key});
+class RoutinesList extends ConsumerWidget {
+  const RoutinesList({super.key, required this.title});
+  final String title;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final workoutPlans = ref.watch(workoutPlanListFutureProvider);
-    final listTitle = 'My Workout Plans';
+    final routines = ref.watch(routineListFutureProvider);
 
     return ListView(
       children: [
@@ -21,8 +22,8 @@ class WorkoutPlansList extends ConsumerWidget {
           child: Column(
             children: [
               ListSection(
-                title: listTitle,
-                content: workoutPlans,
+                title: title,
+                content: routines,
               ),
             ],
           ),
@@ -46,10 +47,7 @@ class ListSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: TextStyle(fontSize: 22),
-              ),
+              TitleHeader(text: title),
               AsyncValueWidget(
                 value: content,
                 data: (data) => ListSectionItem(items: data),
@@ -64,7 +62,7 @@ class ListSection extends StatelessWidget {
 
 class ListSectionItem extends StatelessWidget {
   const ListSectionItem({super.key, required this.items});
-  final List<WorkoutPlan?> items;
+  final List<Routine?> items;
 
   @override
   Widget build(BuildContext context) {
@@ -74,33 +72,36 @@ class ListSectionItem extends StatelessWidget {
             children: items
                 .map((item) => Column(
                       children: [
-                        ListTile(
-                            tileColor: Colors.transparent,
-                            leading: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                minWidth: 64,
-                                minHeight: 44,
-                                maxWidth: 84,
-                                maxHeight: 64,
-                              ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: ListTile(
+                            visualDensity: VisualDensity(vertical: 4.0),
+                            minVerticalPadding: 20,
+                            leading: Container(
+                              clipBehavior: Clip.antiAlias,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0)),
                               child: Image.asset(
                                 'assets/image${item!.id}.jpg',
-                                width: 100,
-                                height: 20,
+                                fit: BoxFit.cover,
+                                width: 130,
+                                height: 120,
                               ),
                             ),
-                            title: Text(item.title),
+                            title: TextHeader(text: item.title),
                             subtitle: Text(
                                 '${item.exercises.length.toString()} workouts'),
                             onTap: () {
                               ref
-                                  .read(workoutPlansRepositoryProvider)
-                                  .getWorkoutPlanById(workoutPlanId: item.id);
+                                  .read(routinesRepositoryProvider)
+                                  .getRoutineById(routineId: item.id);
                               context.goNamed(
                                 AppRoute.workoutPlan.name,
                                 pathParameters: {'id': item.id},
                               );
-                            }),
+                            },
+                          ),
+                        ),
                       ],
                     ))
                 .toList());

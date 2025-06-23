@@ -12,35 +12,38 @@ class FitnessApp extends ConsumerWidget {
       routerConfig: goRouter,
       title: 'Fitness App',
       theme: ThemeData(
-        primarySwatch: Colors.grey,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.black87,
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: Colors.black87,
-          indicatorColor: Colors.white10,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.black, // background (button) color
-            foregroundColor: Colors.white, // foreground (text) color
+          primarySwatch: Colors.grey,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.black87,
+            foregroundColor: Colors.white,
+            elevation: 0,
           ),
-        ),
-        tabBarTheme: TabBarThemeData(
-          indicatorColor: Colors.blueGrey,
-          splashFactory: NoSplash.splashFactory,
-          labelColor: Colors.white,
-          labelStyle: TextStyle(
-            fontSize: 18,
+          navigationBarTheme: NavigationBarThemeData(
+            backgroundColor: Colors.black87,
+            indicatorColor: Colors.white10,
           ),
-          unselectedLabelStyle: TextStyle(
-            fontSize: 16,
-            color: Colors.white38,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black, // background (button) color
+              foregroundColor: Colors.white, // foreground (text) color
+            ),
           ),
-        ),
-      ),
+          tabBarTheme: TabBarThemeData(
+            indicatorColor: Colors.blueGrey,
+            splashFactory: NoSplash.splashFactory,
+            labelColor: Colors.white,
+            labelStyle: TextStyle(
+              fontSize: 18,
+            ),
+            unselectedLabelStyle: TextStyle(
+              fontSize: 16,
+              color: Colors.white38,
+            ),
+          ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: Colors.black87,
+            foregroundColor: Colors.white,
+          )),
     );
   }
 }
