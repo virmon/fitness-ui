@@ -29,6 +29,13 @@ const mockRoutines = [
                 weight: 20,
                 weightUnit: 'LBS',
                 restDuration: 2000),
+            ExerciseSet(
+                setNo: '3',
+                repLower: 5,
+                repUpper: 10,
+                weight: 20,
+                weightUnit: 'LBS',
+                restDuration: 2000),
           ]),
       Exercise(
           id: '2',

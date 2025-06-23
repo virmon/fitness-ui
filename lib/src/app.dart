@@ -12,6 +12,9 @@ class FitnessApp extends ConsumerWidget {
       routerConfig: goRouter,
       title: 'Fitness App',
       theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.indigo,
+          ),
           primarySwatch: Colors.grey,
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.black87,
@@ -24,12 +27,12 @@ class FitnessApp extends ConsumerWidget {
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black, // background (button) color
-              foregroundColor: Colors.white, // foreground (text) color
+              backgroundColor: Colors.indigo,
+              foregroundColor: Colors.white,
             ),
           ),
           tabBarTheme: TabBarThemeData(
-            indicatorColor: Colors.blueGrey,
+            indicatorColor: Colors.indigo,
             splashFactory: NoSplash.splashFactory,
             labelColor: Colors.white,
             labelStyle: TextStyle(
@@ -41,7 +44,7 @@ class FitnessApp extends ConsumerWidget {
             ),
           ),
           floatingActionButtonTheme: FloatingActionButtonThemeData(
-            backgroundColor: Colors.black87,
+            backgroundColor: Colors.indigo,
             foregroundColor: Colors.white,
           )),
     );
