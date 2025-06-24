@@ -1,5 +1,6 @@
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_list.dart';
+import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,6 +22,14 @@ class RoutinesListScreen extends StatelessWidget {
               child: Text('Explore'),
             ),
           ]),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                context.pushNamed(AppRoute.search.name);
+              },
+            )
+          ],
         ),
         body: TabBarView(children: [
           RoutinesList(title: 'My Routines'),

@@ -3,6 +3,7 @@ import 'package:fitness_ui/src/features/authentication/firebase_auth_repository.
 import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routine_detail_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_list_screen.dart';
+import 'package:fitness_ui/src/features/routines/presentation/app_search_screen.dart';
 import 'package:fitness_ui/src/routing/go_router_refresh_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,7 @@ enum AppRoute {
   workouts,
   workoutPlan,
   profile,
+  search,
 }
 
 final goRouterProvider = Provider((ref) {
@@ -95,6 +97,13 @@ final goRouterProvider = Provider((ref) {
                       },
                     ),
                   ]),
+              GoRoute(
+                path: '/search',
+                name: AppRoute.search.name,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: AppSearchScreen(),
+                ),
+              ),
             ],
           ),
           StatefulShellBranch(

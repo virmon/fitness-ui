@@ -3,8 +3,10 @@ import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
+import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class RoutineDetailScreen extends StatelessWidget {
   const RoutineDetailScreen({super.key, required this.routineId});
@@ -47,7 +49,8 @@ class RoutineDetailScreen extends StatelessWidget {
                                           children: [
                                             ElevatedButton(
                                                 onPressed: () {
-                                                  // todo: implement add exercise on current routine
+                                                  context.pushNamed(
+                                                      AppRoute.search.name);
                                                 },
                                                 child: const Text('Add')),
                                             ElevatedButton(
