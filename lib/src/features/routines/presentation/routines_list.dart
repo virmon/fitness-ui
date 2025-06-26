@@ -1,6 +1,6 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
-import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
+import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ class RoutinesList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final routines = ref.watch(routineListFutureProvider);
+    final routines = ref.watch(routinesListFutureProvider);
 
     return ListView(
       children: [
@@ -82,22 +82,22 @@ class ListSectionItem extends StatelessWidget {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10.0)),
                               child: Image.asset(
-                                'assets/image${item!.id}.jpg',
+                                'assets/image_placeholder.jpg',
                                 fit: BoxFit.cover,
                                 width: 130,
                                 height: 120,
                               ),
                             ),
-                            title: TextHeader(text: item.title),
+                            title: TextHeader(text: item!.title),
                             subtitle: Text(
-                                '${item.exercises.length.toString()} workouts'),
+                                '${item.exercises?.length.toString() ?? 0} workouts'),
                             onTap: () {
                               ref
                                   .read(routinesRepositoryProvider)
-                                  .getRoutineById(routineId: item.id);
+                                  .getRoutineById(item.id!);
                               context.goNamed(
                                 AppRoute.workoutPlan.name,
-                                pathParameters: {'id': item.id},
+                                queryParameters: {'id': item.id!},
                               );
                             },
                           ),

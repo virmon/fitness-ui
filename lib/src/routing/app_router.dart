@@ -27,6 +27,7 @@ enum AppRoute {
   home,
   workouts,
   workoutPlan,
+  newRoutine,
   profile,
   search,
 }
@@ -89,11 +90,15 @@ final goRouterProvider = Provider((ref) {
                       ),
                   routes: [
                     GoRoute(
-                      path: '/:id',
+                      path: '/detail',
                       name: AppRoute.workoutPlan.name,
                       builder: (context, state) {
-                        final routineId = state.pathParameters['id'];
-                        return RoutineDetailScreen(routineId: routineId);
+                        final routineId = state.uri.queryParameters['id'];
+                        final routineTitle = state.uri.queryParameters['title'];
+                        return RoutineDetailScreen(
+                          routineId: routineId,
+                          routineTitle: routineTitle,
+                        );
                       },
                     ),
                   ]),
