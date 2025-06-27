@@ -98,16 +98,16 @@ class ExerciseItem extends StatelessWidget {
                             TextHeader(text: item.value?.title ?? ''),
                           ],
                         ),
-                        subtitle: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text('${item.value!.exerciseSets.length} sets · '),
-                            Text(
-                                '${item.value!.exerciseSets[1].weight} ${item.value!.exerciseSets[1].weightUnit} · '),
-                            Text(
-                                '${item.value!.exerciseSets[1].repUpper} reps'),
-                          ],
-                        ),
+                        // subtitle: Row(
+                        //   mainAxisAlignment: MainAxisAlignment.start,
+                        //   children: [
+                        //     Text('${item.value?.exerciseSets?.length ?? 0} sets · '),
+                        //     Text(
+                        //         '${item.value?.exerciseSets[1].weight} ${item.value!.exerciseSets[1].weightUnit} · '),
+                        //     Text(
+                        //         '${item.value!.exerciseSets[1].repUpper} reps'),
+                        //   ],
+                        // ),
                         trailing: InkWell(
                           child: Icon(Icons.more_horiz_outlined),
                           onTap: () => showModalBottomSheet(
@@ -116,7 +116,7 @@ class ExerciseItem extends StatelessWidget {
                             builder: (BuildContext context) {
                               return ExerciseSetForm(
                                 exerciseName: item.value!.title,
-                                exerciseSets: item.value!.exerciseSets,
+                                exerciseSets: item.value!.exerciseSets ?? [],
                               );
                             },
                           ),
@@ -154,14 +154,13 @@ class ExerciseSetForm extends StatelessWidget {
               children: [
                 ElevatedButton(
                     onPressed: () {
-                      // todo: create new routine
-                      // todo: navigate to newly created routine
+                      // todo: implement add exercise set
                     },
                     child: const Text('Add Set')),
                 ElevatedButton(
                     onPressed: () {
-                      // todo: create new routine
-                      // todo: navigate to newly created routine
+                      // todo: implement save added sets
+                      // todo: pop modal slider after save
                     },
                     child: const Text('Apply Changes')),
               ],

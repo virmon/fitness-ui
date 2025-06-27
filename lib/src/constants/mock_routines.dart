@@ -145,3 +145,18 @@ const mockRoutines = [
     isPrivate: false,
   ),
 ];
+
+const mockExercises = [
+  Exercise(id: '1', title: 'Squats', type: 'Legs'),
+  Exercise(id: '2', title: 'Push-ups', type: 'Chest'),
+  Exercise(id: '3', title: 'Sit-ups', type: 'Core'),
+  Exercise(id: '4', title: 'Crunches', type: 'Core'),
+  Exercise(id: '5', title: 'Pull-ups', type: 'Back'),
+  Exercise(id: '6', title: 'Lunges', type: 'Legs'),
+  Exercise(id: '7', title: 'Bicep Curls', type: 'Arms'),
+  Exercise(id: '8', title: 'Deadlifts', type: 'Legs'),
+  Exercise(id: '9', title: 'Burpees', type: 'Core'),
+  Exercise(id: '10', title: 'Leg Raise', type: 'Legs'),
+  Exercise(id: '11', title: 'Shoulder Press', type: 'Shoulders'),
+  Exercise(id: '12', title: 'Bulgarian Split Squats', type: 'Legs'),
+];
