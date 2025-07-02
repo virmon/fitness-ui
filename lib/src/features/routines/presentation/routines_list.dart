@@ -1,5 +1,6 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
+import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
@@ -70,7 +71,7 @@ class ListSectionItem extends StatelessWidget {
       builder: (context, ref, child) {
         return Column(
             children: items
-                .map((item) => Column(
+                .map((routine) => Column(
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
@@ -88,17 +89,17 @@ class ListSectionItem extends StatelessWidget {
                                 height: 120,
                               ),
                             ),
-                            title: TextHeader(text: item!.title),
+                            title: TextHeader(text: routine!.title),
                             subtitle: Text(
-                                '${item.exercises?.length.toString() ?? 0} workouts'),
+                                '${routine.exercises.length.toString()} workouts'),
                             onTap: () {
-                              ref
-                                  .read(routinesRepositoryProvider)
-                                  .getRoutineById(item.id!);
-                              context.goNamed(
-                                AppRoute.workoutPlan.name,
-                                queryParameters: {'id': item.id!},
-                              );
+                              final routineId = routine.id;
+                              if (routineId != null) {
+                                ref
+                                    .read(routineServiceProvider)
+                                    .setSelectedRoutine(routineId);
+                                context.goNamed(AppRoute.workoutPlan.name);
+                              }
                             },
                           ),
                         ),

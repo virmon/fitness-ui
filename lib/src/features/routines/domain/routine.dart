@@ -12,15 +12,15 @@ class Routine {
   final String? id;
   final String title;
   final String? notes;
-  final List<Exercise>? exercises;
+  final List<Exercise> exercises;
   final bool isPrivate;
 
   const Routine({
     this.id,
     required this.title,
     this.notes,
-    this.exercises,
-    required this.isPrivate,
+    this.exercises = const [],
+    this.isPrivate = true,
   });
 
   factory Routine.fromJson(Map<String, dynamic> json) => Routine(
@@ -36,7 +36,7 @@ class Routine {
         "id": id,
         "title": title,
         "notes": notes,
-        "exercises": List<dynamic>.from(exercises!.map((x) => x.toJson())),
+        "exercises": List<dynamic>.from(exercises.map((x) => x.toJson())),
         "isPrivate": isPrivate,
       };
 

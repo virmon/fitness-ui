@@ -1,72 +1,105 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
+import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
-import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
+import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class RoutineDetailScreen extends StatelessWidget {
-  const RoutineDetailScreen({super.key, this.routineId, this.routineTitle});
-  final String? routineId;
+  const RoutineDetailScreen({super.key, this.routineTitle});
   final String? routineTitle;
 
   @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
-        final routineValue = ref.watch(routineProvider(routineId ?? '0'));
+        final routineId =
+            ref.watch(routineServiceProvider).getSelectedRoutine();
+
+        AsyncValue routineValue = AsyncData([]);
+        if (routineId == null) {
+          context.goNamed(AppRoute.workouts.name);
+        } else {
+          routineValue = ref.watch(routineProvider(routineId));
+        }
 
         return Scaffold(
-            appBar: AppBar(),
+            appBar: AppBar(
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    context.pushNamed(AppRoute.search.name);
+                  },
+                  icon: Icon(Icons.add),
+                ),
+              ],
+            ),
             body: ListView(
               children: [
                 Column(
                   children: [
                     AsyncValueWidget(
-                      value: routineValue,
-                      data: (routine) => Center(
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              'assets/image_placeholder.jpg',
-                              width: 400,
-                              height: 280,
-                            ),
-                            Column(
-                              children: [
-                                TitleHeader(
-                                  text: routineTitle ?? routine!.title,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            context.pushNamed(
-                                                AppRoute.search.name);
-                                          },
-                                          child: const Text('Add')),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            // todo: implement start workout session
-                                          },
-                                          child: const Text('Start')),
-                                    ],
+                        value: routineValue,
+                        data: (routine) {
+                          return Column(
+                            children: [
+                              Image.asset(
+                                'assets/image_placeholder.jpg',
+                                width: 400,
+                                height: 280,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 20.0),
+                                      child: TitleHeader(
+                                        text: routineTitle ??
+                                            routine?.title ??
+                                            '',
+                                      )),
+                                  Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 20.0),
+                                      child: Text(
+                                          '${routine?.exercises.length ?? '0'} workouts')),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [],
+                                    ),
                                   ),
-                                ),
-                                ExerciseItem(items: routine?.exercises ?? [])
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    )
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          width: 450,
+                                          height: 60,
+                                          child: ElevatedButton(
+                                              onPressed: () {
+                                                // todo: implement start workout session
+                                              },
+                                              child: const TextHeader(
+                                                  text: 'Start Workout')),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  ExerciseItem(
+                                      exercises: routine?.exercises ?? [])
+                                ],
+                              )
+                            ],
+                          );
+                        })
                   ],
                 ),
               ],
@@ -77,46 +110,43 @@ class RoutineDetailScreen extends StatelessWidget {
 }
 
 class ExerciseItem extends StatelessWidget {
-  const ExerciseItem({super.key, required this.items});
-  final List<Exercise?> items;
+  const ExerciseItem({super.key, required this.exercises});
+  final List<Exercise?> exercises;
 
   @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
         return Column(
-            children: items.isEmpty
+            children: exercises.isEmpty
                 ? [Text('No exercise data')]
-                : items
+                : exercises
                     .asMap()
                     .entries
                     .map(
-                      (item) => ListTile(
+                      (exercise) => ListTile(
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            TextHeader(text: item.value?.title ?? ''),
+                            TextHeader(text: exercise.value?.title ?? ''),
                           ],
                         ),
-                        // subtitle: Row(
-                        //   mainAxisAlignment: MainAxisAlignment.start,
-                        //   children: [
-                        //     Text('${item.value?.exerciseSets?.length ?? 0} sets · '),
-                        //     Text(
-                        //         '${item.value?.exerciseSets[1].weight} ${item.value!.exerciseSets[1].weightUnit} · '),
-                        //     Text(
-                        //         '${item.value!.exerciseSets[1].repUpper} reps'),
-                        //   ],
-                        // ),
+                        subtitle: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                                '${exercise.value?.exerciseSets?.length ?? 0} sets'),
+                          ],
+                        ),
                         trailing: InkWell(
                           child: Icon(Icons.more_horiz_outlined),
                           onTap: () => showModalBottomSheet(
                             showDragHandle: true,
                             context: context,
                             builder: (BuildContext context) {
-                              return ExerciseSetForm(
-                                exerciseName: item.value!.title,
-                                exerciseSets: item.value!.exerciseSets ?? [],
+                              return ExerciseAddSetForm(
+                                exercise: exercise.value!,
+                                isUpdate: true,
                               );
                             },
                           ),
@@ -125,76 +155,6 @@ class ExerciseItem extends StatelessWidget {
                     )
                     .toList());
       },
-    );
-  }
-}
-
-class ExerciseSetForm extends StatelessWidget {
-  const ExerciseSetForm({
-    super.key,
-    required this.exerciseName,
-    required this.exerciseSets,
-  });
-  final String exerciseName;
-  final List<ExerciseSet> exerciseSets;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 500,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            TitleHeader(text: exerciseName),
-            ExerciseSetTable(exerciseSets: exerciseSets),
-            SizedBox(height: 100),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                    onPressed: () {
-                      // todo: implement add exercise set
-                    },
-                    child: const Text('Add Set')),
-                ElevatedButton(
-                    onPressed: () {
-                      // todo: implement save added sets
-                      // todo: pop modal slider after save
-                    },
-                    child: const Text('Apply Changes')),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ExerciseSetTable extends StatelessWidget {
-  const ExerciseSetTable({super.key, required this.exerciseSets});
-  final List<ExerciseSet> exerciseSets;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      child: DataTable(
-        columnSpacing: 100,
-        columns: const <DataColumn>[
-          DataColumn(label: Text('Set')),
-          DataColumn(label: Text('LBS')),
-          DataColumn(label: Text('Rep Range')),
-        ],
-        rows: exerciseSets
-            .map((exerciseSet) => DataRow(cells: [
-                  DataCell(Text(exerciseSet.setNo.toString())),
-                  DataCell(Text(exerciseSet.weight.toString())),
-                  DataCell(Text(
-                      '${exerciseSet.repLower.toString()} to ${exerciseSet.repUpper.toString()}')),
-                ]))
-            .toList(),
-      ),
     );
   }
 }

@@ -93,21 +93,19 @@ final goRouterProvider = Provider((ref) {
                       path: '/detail',
                       name: AppRoute.workoutPlan.name,
                       builder: (context, state) {
-                        final routineId = state.uri.queryParameters['id'];
                         final routineTitle = state.uri.queryParameters['title'];
-                        return RoutineDetailScreen(
-                          routineId: routineId,
-                          routineTitle: routineTitle,
-                        );
+                        return RoutineDetailScreen(routineTitle: routineTitle);
                       },
                     ),
                   ]),
               GoRoute(
                 path: '/search',
                 name: AppRoute.search.name,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: AppSearchScreen(),
-                ),
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(
+                    child: AppSearchScreen(),
+                  );
+                },
               ),
             ],
           ),

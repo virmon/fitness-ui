@@ -37,4 +37,21 @@ class Exercise {
             ? List<dynamic>.from(exerciseSets!.map((x) => x.toJson()))
             : [],
       };
+
+  Exercise copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? type,
+    String? notes,
+    List<ExerciseSet>? exerciseSets,
+  }) =>
+      Exercise(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        description: description ?? this.description,
+        type: type ?? this.type,
+        notes: notes ?? this.notes,
+        exerciseSets: exerciseSets ?? this.exerciseSets,
+      );
 }

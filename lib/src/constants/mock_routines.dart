@@ -2,7 +2,7 @@ import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 
-const mockRoutines = [
+final mockRoutines = [
   Routine(
     id: '1',
     title: 'My First Workout Plan',
@@ -38,8 +38,8 @@ const mockRoutines = [
                 restDuration: 2000),
           ]),
       Exercise(
-          id: '2',
-          title: 'Squats with Barbell',
+          id: '12',
+          title: 'Bulgarian Split Squats',
           description: 'desc1',
           type: 'Weights',
           notes: '',
@@ -60,8 +60,8 @@ const mockRoutines = [
                 restDuration: 2000),
           ]),
       Exercise(
-          id: '3',
-          title: 'Leg-raises',
+          id: '10',
+          title: 'Leg Raise',
           description: 'desc1',
           type: 'Weights',
           notes: '',
@@ -90,7 +90,7 @@ const mockRoutines = [
     notes: '',
     exercises: [
       Exercise(
-          id: '1',
+          id: '3',
           title: 'Sit-ups',
           description: 'desc1',
           type: 'Weights',

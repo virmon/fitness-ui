@@ -1,6 +1,7 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
+import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routine_controller.dart';
 import 'package:fitness_ui/src/features/routines/presentation/search/app_search_bar.dart';
 import 'package:flutter/material.dart' hide SearchBar;
@@ -49,33 +50,37 @@ class SearchResultListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (context, ref, child) {
-      return Consumer(
-        builder: (context, ref, child) {
-          return Column(
-              children: items.isEmpty
-                  ? [Text('No data')]
-                  : items
-                      .map((exercise) => Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(0),
-                                child: ListTile(
-                                  title: TextHeader(text: exercise!.title),
-                                  subtitle: Text(exercise.type),
-                                  trailing: IconButton(
-                                    onPressed: () => {
-                                      // todo: implement add to current routine plan
-                                    },
-                                    icon: Icon(Icons.add_circle),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ))
-                      .toList());
-        },
-      );
-    });
+    return Column(
+      children: items.isEmpty
+          ? [Text('No data')]
+          : items
+              .map(
+                (exercise) => Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(0),
+                      child: ListTile(
+                        title: TextHeader(text: exercise!.title),
+                        subtitle: Text(exercise.type),
+                        trailing: IconButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                                showDragHandle: true,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return ExerciseAddSetForm(
+                                    exercise: exercise,
+                                  );
+                                });
+                          },
+                          icon: Icon(Icons.add_circle),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              .toList(),
+    );
   }
 }

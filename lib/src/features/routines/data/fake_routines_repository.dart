@@ -33,21 +33,27 @@ class FakeRoutinesRepository {
         .map((routines) => _getRoutine(routines, routineId));
   }
 
-  Future<void> setRoutine(String title, String? routineId) async {
+  Future<void> setRoutine(Routine routine) async {
     await delay(hasDelay);
     final routines = _routines.value;
 
-    if (routineId == null) {
+    if (routine.id == null) {
       Routine myNewRoutine = Routine(
-        id: title,
-        title: title,
+        id: routine.title,
+        title: routine.title,
+        notes: routine.notes ?? '',
+        exercises: routine.exercises,
         isPrivate: true,
       );
       routines.add(myNewRoutine);
     } else {
-      final index = routines.indexWhere((routine) => routine.id == routineId);
+      final index = routines.indexWhere((current) => current.id == routine.id);
+
       routines[index] = routines[index].copyWith(
-        title: title,
+        title: routine.title,
+        notes: routine.notes ?? '',
+        exercises: routine.exercises,
+        isPrivate: routine.isPrivate,
       );
     }
     _routines.value = routines;
