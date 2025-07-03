@@ -41,6 +41,18 @@ class RoutineService {
       FlutterError.onError!(FlutterErrorDetails(exception: e));
     }
   }
+
+  Future<void> removeExercise(Exercise exercise) async {
+    try {
+      String? routineId = getSelectedRoutine();
+      final routine =
+          ref.read(routinesRepositoryProvider).getRoutineById(routineId!);
+      Routine updatedRoutine = routine!.removeExerciseById(exercise.id);
+      createRoutine(updatedRoutine);
+    } catch (e) {
+      FlutterError.onError!(FlutterErrorDetails(exception: e));
+    }
+  }
 }
 
 final routineServiceProvider = Provider<RoutineService>((ref) {

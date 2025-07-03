@@ -1,3 +1,4 @@
+import 'package:fitness_ui/src/common/app_menu_widget.dart';
 import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
@@ -76,21 +77,45 @@ class RoutineDetailScreen extends StatelessWidget {
                                       children: [],
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                          width: 450,
-                                          height: 60,
-                                          child: ElevatedButton(
-                                              onPressed: () {
-                                                // todo: implement start workout session
-                                              },
-                                              child: const TextHeader(
-                                                  text: 'Start Workout')),
-                                        ),
-                                      ],
+                                  Visibility(
+                                    visible: routine.exercises.isNotEmpty,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            width: 450,
+                                            height: 60,
+                                            child: ElevatedButton(
+                                                onPressed: () {
+                                                  // todo: implement start workout session
+                                                },
+                                                child: const TextHeader(
+                                                    text: 'Start Workout')),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: routine.exercises.isEmpty,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            width: 450,
+                                            height: 60,
+                                            child: ElevatedButton(
+                                                onPressed: () =>
+                                                    context.pushNamed(
+                                                        AppRoute.search.name),
+                                                child: const TextHeader(
+                                                    text:
+                                                        'Add to this routine')),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   ExerciseItem(
@@ -113,18 +138,63 @@ class ExerciseItem extends StatelessWidget {
   const ExerciseItem({super.key, required this.exercises});
   final List<Exercise?> exercises;
 
+  void _showEditExerciseSets(BuildContext context, exercise) {
+    context.pop();
+    showModalBottomSheet(
+      isDismissible: false,
+      showDragHandle: false,
+      enableDrag: false,
+      context: context,
+      builder: (BuildContext context) {
+        return ExerciseAddSetForm(
+          exercise: exercise.value!,
+          isUpdate: true,
+        );
+      },
+    );
+  }
+
+  void _showExerciseMenu(BuildContext context, exercise, removeExercise) {
+    List<MenuItem> menuItems = [
+      MenuItem(
+        'Edit Exercise Sets',
+        Icons.edit,
+        () => _showEditExerciseSets(context, exercise),
+      ),
+      MenuItem(
+        'Remove Exercise',
+        Icons.delete,
+        () => _removeExercise(context, exercise, removeExercise),
+      ),
+    ];
+
+    showModalBottomSheet(
+      showDragHandle: true,
+      context: context,
+      builder: (BuildContext context) {
+        return AppMenuWidget(menuItems: menuItems);
+      },
+    );
+  }
+
+  void _removeExercise(BuildContext context, exercise, removeExercise) {
+    context.pop();
+    removeExercise(exercise.value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        return Column(
-            children: exercises.isEmpty
-                ? [Text('No exercise data')]
-                : exercises
-                    .asMap()
-                    .entries
-                    .map(
-                      (exercise) => ListTile(
+        final removeExercise = ref.read(routineServiceProvider).removeExercise;
+        return Visibility(
+          visible: exercises.isNotEmpty,
+          child: Column(
+              children: exercises
+                  .asMap()
+                  .entries
+                  .map(
+                    (exercise) => ListTile(
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -138,24 +208,15 @@ class ExerciseItem extends StatelessWidget {
                                 '${exercise.value?.exerciseSets?.length ?? 0} sets'),
                           ],
                         ),
-                        trailing: InkWell(
-                          child: Icon(Icons.more_horiz_outlined),
-                          onTap: () => showModalBottomSheet(
-                            isDismissible: false,
-                            showDragHandle: false,
-                            enableDrag: false,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ExerciseAddSetForm(
-                                exercise: exercise.value!,
-                                isUpdate: true,
-                              );
-                            },
-                          ),
+                        trailing: IconButton(
+                          onPressed: () => _showExerciseMenu(
+                              context, exercise, removeExercise),
+                          icon: Icon(Icons.more_horiz_outlined),
                         ),
-                      ),
-                    )
-                    .toList());
+                        onTap: () => {}),
+                  )
+                  .toList()),
+        );
       },
     );
   }
