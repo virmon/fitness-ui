@@ -3,6 +3,7 @@ import 'package:fitness_ui/src/features/routines/application/routine_service.dar
 import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
+import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +30,8 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
   String _upperRep = '';
 
   List<ExerciseSet> _exerciseSet = [];
+  final List<ExerciseSet> _removedSets = [];
+  final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
@@ -61,127 +64,226 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
     });
   }
 
-  void _addExerciseSet(ExerciseSet newExerciseSet) {
+  void _addExerciseSet() {
+    final exerciseSetCount = _exerciseSet.length + 1;
+    final weightUnit = 'LBS';
+
+    final newExerciseSet = ExerciseSet(
+      setNo: exerciseSetCount.toString(),
+      repLower: int.parse(_lowerRep),
+      repUpper: int.parse(_upperRep),
+      weight: int.parse(_weight),
+      weightUnit: weightUnit,
+      restDuration: 2000,
+    );
     setState(() {
       _exerciseSet = [..._exerciseSet, newExerciseSet];
     });
   }
 
+  void _removeExerciseSet(ExerciseSet exercise) {
+    final removeIndex =
+        _exerciseSet.indexWhere((e) => e.setNo == exercise.setNo);
+
+    setState(() {
+      final removedSet = _exerciseSet.removeAt(removeIndex);
+      _removedSets.add(removedSet);
+    });
+  }
+
+  void _updateSets(AsyncValue routine) {
+    List<ExerciseSet> undoList = [..._exerciseSet];
+    setState(() {
+      final updatedExercise = Exercise(
+        id: widget.exercise.id,
+        title: widget.exercise.title,
+        type: widget.exercise.type,
+        exerciseSets: undoList,
+      );
+      routine.whenData((selectedRoutine) => ref
+          .read(routineServiceProvider)
+          .addExercise(selectedRoutine!, updatedExercise, widget.isUpdate));
+    });
+  }
+
+  void _scrollDown() {
+    if (_controller.hasClients) {
+      final listTileHeight = 64;
+      double scrollPosition = _controller.position.maxScrollExtent;
+      if (_exerciseSet.length >= 3) {
+        scrollPosition = _controller.position.maxScrollExtent + listTileHeight;
+      }
+      _controller.animateTo(
+        scrollPosition,
+        duration: Duration(seconds: 1),
+        curve: Curves.ease,
+      );
+    }
+  }
+
+  void _saveToRoutine(AsyncValue<Routine?> routine) {
+    String message = widget.isUpdate
+        ? '${widget.exercise.title} Updated'
+        : '${widget.exercise.title} Added';
+    final updatedExercise = Exercise(
+      id: widget.exercise.id,
+      title: widget.exercise.title,
+      type: widget.exercise.type,
+      exerciseSets: _exerciseSet,
+    );
+
+    routine.whenData((selectedRoutine) => ref
+        .read(routineServiceProvider)
+        .addExercise(selectedRoutine!, updatedExercise, widget.isUpdate));
+    context.pop();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final routineId = ref.read(routineServiceProvider).getSelectedRoutine();
-    final routine = ref.watch(routineProvider(routineId!));
+    final routine = ref.watch(routineProvider(routineId ?? '0'));
 
     String saveButtonText =
         widget.isUpdate ? 'Apply changes' : 'Add to routine';
-    String message = widget.isUpdate ? 'Exercise Updated' : 'Exercise Added';
 
     return SizedBox(
       height: 900,
       child: Center(
         child: Column(
           children: [
-            ExerciseSetList(exerciseSets: _exerciseSet),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Card(
-                    child: Row(
-                  children: [
-                    SizedBox(
-                      height: 70,
-                      width: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          autofocus: true,
-                          controller: _weightController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(), label: Text('LBS')),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 70,
-                      width: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _lowerRepController,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(), label: Text('Min')),
-                        ),
-                      ),
-                    ),
-                    Text('to'),
-                    SizedBox(
-                      height: 70,
-                      width: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _upperRepController,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(), label: Text('Max')),
-                        ),
-                      ),
-                    ),
-                  ],
-                )),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigo,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, right: 10),
+                  child: IconButton(
                     onPressed: () {
-                      if (_weight == '' || _lowerRep == '' || _upperRep == '') {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: const Text('Missing Input')));
-                      } else {
-                        final exerciseSetCount = _exerciseSet.length + 1;
-                        final weightUnit = 'LBS';
-
-                        final newExerciseSet = ExerciseSet(
-                          setNo: exerciseSetCount.toString(),
-                          repLower: int.parse(_lowerRep),
-                          repUpper: int.parse(_upperRep),
-                          weight: int.parse(_weight),
-                          weightUnit: weightUnit,
-                          restDuration: 2000,
-                        );
-
-                        _addExerciseSet(newExerciseSet);
+                      context.pop();
+                      if (widget.isUpdate) {
+                        _updateSets(routine);
                       }
                     },
-                    child: const Text('Add Set')),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigo,
-                    ),
-                    onPressed: () {
-                      // add to current routine plan
-                      final updatedExercise = Exercise(
-                        id: widget.exercise.id,
-                        title: widget.exercise.title,
-                        type: widget.exercise.type,
-                        exerciseSets: _exerciseSet,
-                      );
-
-                      routine.whenData((selectedRoutine) => ref
-                          .read(routineServiceProvider)
-                          .addExercise(selectedRoutine!, updatedExercise,
-                              widget.isUpdate));
-                      context.pop();
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text(message)));
-                    },
-                    child: Text(saveButtonText)),
+                    icon: Icon(Icons.close),
+                  ),
+                )
               ],
+            ),
+            ExerciseSetList(
+                exerciseSets: _exerciseSet,
+                callback: _removeExerciseSet,
+                scrollControl: _controller),
+            SizedBox(
+                child: Column(
+              children: [
+                Card(
+                  child: ListTile(
+                    title: Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SizedBox(
+                              height: 50,
+                              width: 80,
+                              child: Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: TextField(
+                                  autofocus: true,
+                                  controller: _weightController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      label: Text('LBS')),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 50,
+                              width: 80,
+                              child: Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: TextField(
+                                  controller: _lowerRepController,
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      label: Text('Rep lower')),
+                                ),
+                              ),
+                            ),
+                            Text('to'),
+                            SizedBox(
+                              height: 50,
+                              width: 80,
+                              child: Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: TextField(
+                                  // style: TextStyle(height: 1.5),
+                                  controller: _upperRepController,
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      label: Text('Rep upper')),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
+                    trailing: IconButton(
+                      onPressed: () {
+                        if (_weight == '' ||
+                            _lowerRep == '' ||
+                            _upperRep == '') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: const Text('Missing Input')));
+                        } else {
+                          _scrollDown();
+                          _addExerciseSet();
+                        }
+                      },
+                      icon: Icon(Icons.add),
+                    ),
+                  ),
+                )
+              ],
+            )),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Visibility(
+                    visible: false,
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo,
+                        ),
+                        onPressed: () {
+                          if (_weight == '' ||
+                              _lowerRep == '' ||
+                              _upperRep == '') {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: const Text('Missing Input')));
+                          } else {
+                            _scrollDown();
+                            _addExerciseSet();
+                          }
+                        },
+                        child: const Text('Add Set')),
+                  ),
+                  Visibility(
+                    visible: !widget.isUpdate,
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo,
+                        ),
+                        onPressed: () {
+                          _saveToRoutine(routine);
+                        },
+                        child: Text(saveButtonText)),
+                  ),
+                ],
+              ),
             )
           ],
         ),
@@ -191,8 +293,15 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
 }
 
 class ExerciseSetList extends StatelessWidget {
-  const ExerciseSetList({super.key, required this.exerciseSets});
+  const ExerciseSetList({
+    super.key,
+    required this.exerciseSets,
+    this.callback,
+    required this.scrollControl,
+  });
   final List<ExerciseSet> exerciseSets;
+  final Function? callback;
+  final ScrollController scrollControl;
 
   @override
   Widget build(BuildContext context) {
@@ -213,12 +322,19 @@ class ExerciseSetList extends StatelessWidget {
           SizedBox(
             height: 190,
             child: ListView(
+              controller: scrollControl,
               children: [
                 Column(
                   children: exerciseSets.isEmpty
                       ? [Text('No Data')]
                       : exerciseSets
                           .map((exerciseSet) => Card(
+                                  child: Dismissible(
+                                key: Key(exerciseSet.setNo.toString()),
+                                onDismissed: (direction) {
+                                  callback!(exerciseSet);
+                                },
+                                background: Container(color: Colors.red),
                                 child: ListTile(
                                   title: Row(
                                     mainAxisAlignment:
@@ -234,7 +350,7 @@ class ExerciseSetList extends StatelessWidget {
                                       onPressed: () => {},
                                       icon: Icon(Icons.more_horiz)),
                                 ),
-                              ))
+                              )))
                           .toList(),
                 ),
               ],

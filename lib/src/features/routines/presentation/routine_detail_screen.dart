@@ -141,7 +141,9 @@ class ExerciseItem extends StatelessWidget {
                         trailing: InkWell(
                           child: Icon(Icons.more_horiz_outlined),
                           onTap: () => showModalBottomSheet(
-                            showDragHandle: true,
+                            isDismissible: false,
+                            showDragHandle: false,
+                            enableDrag: false,
                             context: context,
                             builder: (BuildContext context) {
                               return ExerciseAddSetForm(

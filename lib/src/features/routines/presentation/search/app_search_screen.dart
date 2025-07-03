@@ -65,7 +65,9 @@ class SearchResultListItem extends StatelessWidget {
                         trailing: IconButton(
                           onPressed: () {
                             showModalBottomSheet(
-                                showDragHandle: true,
+                                isDismissible: false,
+                                showDragHandle: false,
+                                enableDrag: false,
                                 context: context,
                                 builder: (BuildContext context) {
                                   return ExerciseAddSetForm(
