@@ -46,7 +46,7 @@ class ListSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TitleHeader(text: title),
               AsyncValueWidget(

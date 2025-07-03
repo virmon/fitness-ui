@@ -5,6 +5,7 @@ import 'package:fitness_ui/src/features/routines/application/routine_service.dar
 import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
+import 'package:fitness_ui/src/features/routines/presentation/forms/routine_add_form.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +14,44 @@ import 'package:go_router/go_router.dart';
 class RoutineDetailScreen extends StatelessWidget {
   const RoutineDetailScreen({super.key, this.routineTitle});
   final String? routineTitle;
+
+  void _showRoutineMenu(BuildContext context, WidgetRef ref, routineId) {
+    List<MenuItem> menuItems = [
+      MenuItem(
+        'Add to this routine',
+        Icons.add_circle_outline,
+        () {
+          context.pop();
+          context.pushNamed(AppRoute.search.name);
+        },
+      ),
+      MenuItem('Edit routine name', Icons.edit, () {
+        context.pop();
+        showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return RoutineAddForm();
+            });
+      }),
+      MenuItem(
+        'Delete routine',
+        Icons.remove_circle_outline,
+        () {
+          context.pop();
+          ref.read(routinesRepositoryProvider).removeRoutine(routineId);
+          context.pop();
+        },
+      ),
+    ];
+
+    showModalBottomSheet(
+      showDragHandle: true,
+      context: context,
+      builder: (BuildContext context) {
+        return AppMenuWidget(menuItems: menuItems);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +71,8 @@ class RoutineDetailScreen extends StatelessWidget {
             appBar: AppBar(
               actions: [
                 IconButton(
-                  onPressed: () {
-                    context.pushNamed(AppRoute.search.name);
-                  },
-                  icon: Icon(Icons.add),
+                  onPressed: () => _showRoutineMenu(context, ref, routineId),
+                  icon: Icon(Icons.more_horiz_rounded),
                 ),
               ],
             ),
@@ -78,7 +115,8 @@ class RoutineDetailScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Visibility(
-                                    visible: routine.exercises.isNotEmpty,
+                                    visible:
+                                        routine?.exercises.isNotEmpty ?? false,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Column(
@@ -98,7 +136,8 @@ class RoutineDetailScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Visibility(
-                                    visible: routine.exercises.isEmpty,
+                                    visible:
+                                        routine?.exercises.isEmpty ?? false,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Column(
@@ -163,7 +202,7 @@ class ExerciseItem extends StatelessWidget {
       ),
       MenuItem(
         'Remove Exercise',
-        Icons.delete,
+        Icons.remove_circle_outline,
         () => _removeExercise(context, exercise, removeExercise),
       ),
     ];

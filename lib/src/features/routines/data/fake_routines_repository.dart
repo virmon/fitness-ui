@@ -59,6 +59,12 @@ class FakeRoutinesRepository {
     _routines.value = routines;
   }
 
+  Future<void> removeRoutine(String routineId) async {
+    await delay(hasDelay);
+    final routines = _routines.value;
+    routines.removeWhere((routine) => routine.id == routineId);
+  }
+
   Future<List<Routine>> searchRoutines(String query) async {
     assert(
       _routines.value.length <= 100,
