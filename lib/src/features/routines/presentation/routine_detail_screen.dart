@@ -15,18 +15,14 @@ class RoutineDetailScreen extends StatelessWidget {
   const RoutineDetailScreen({super.key, this.routineTitle});
   final String? routineTitle;
 
-  void _showRoutineMenu(BuildContext context, WidgetRef ref, routineId) {
+  void _showRoutineMenu(BuildContext context, WidgetRef ref, String routineId) {
     List<MenuItem> menuItems = [
       MenuItem(
         'Add to this routine',
         Icons.add_circle_outline,
-        () {
-          context.pop();
-          context.pushNamed(AppRoute.search.name);
-        },
+        () => context.pushNamed(AppRoute.search.name),
       ),
       MenuItem('Edit routine name', Icons.edit, () {
-        context.pop();
         showModalBottomSheet(
             context: context,
             builder: (BuildContext context) {
@@ -37,7 +33,6 @@ class RoutineDetailScreen extends StatelessWidget {
         'Delete routine',
         Icons.remove_circle_outline,
         () {
-          context.pop();
           ref.read(routinesRepositoryProvider).removeRoutine(routineId);
           context.pop();
         },
@@ -71,7 +66,7 @@ class RoutineDetailScreen extends StatelessWidget {
             appBar: AppBar(
               actions: [
                 IconButton(
-                  onPressed: () => _showRoutineMenu(context, ref, routineId),
+                  onPressed: () => _showRoutineMenu(context, ref, routineId!),
                   icon: Icon(Icons.more_horiz_rounded),
                 ),
               ],
@@ -177,8 +172,7 @@ class ExerciseItem extends StatelessWidget {
   const ExerciseItem({super.key, required this.exercises});
   final List<Exercise?> exercises;
 
-  void _showEditExerciseSets(BuildContext context, exercise) {
-    context.pop();
+  void _showEditExerciseSets(BuildContext context, Exercise exercise) {
     showModalBottomSheet(
       isDismissible: false,
       showDragHandle: false,
@@ -186,14 +180,15 @@ class ExerciseItem extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return ExerciseAddSetForm(
-          exercise: exercise.value!,
+          exercise: exercise,
           isUpdate: true,
         );
       },
     );
   }
 
-  void _showExerciseMenu(BuildContext context, exercise, removeExercise) {
+  void _showExerciseMenu(
+      BuildContext context, WidgetRef ref, Exercise exercise) {
     List<MenuItem> menuItems = [
       MenuItem(
         'Edit Exercise Sets',
@@ -203,7 +198,7 @@ class ExerciseItem extends StatelessWidget {
       MenuItem(
         'Remove Exercise',
         Icons.remove_circle_outline,
-        () => _removeExercise(context, exercise, removeExercise),
+        () => ref.read(routineServiceProvider).removeExercise(exercise),
       ),
     ];
 
@@ -216,16 +211,10 @@ class ExerciseItem extends StatelessWidget {
     );
   }
 
-  void _removeExercise(BuildContext context, exercise, removeExercise) {
-    context.pop();
-    removeExercise(exercise.value);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) {
-        final removeExercise = ref.read(routineServiceProvider).removeExercise;
         return Visibility(
           visible: exercises.isNotEmpty,
           child: Column(
@@ -248,8 +237,8 @@ class ExerciseItem extends StatelessWidget {
                           ],
                         ),
                         trailing: IconButton(
-                          onPressed: () => _showExerciseMenu(
-                              context, exercise, removeExercise),
+                          onPressed: () =>
+                              _showExerciseMenu(context, ref, exercise.value!),
                           icon: Icon(Icons.more_horiz_outlined),
                         ),
                         onTap: () => {}),

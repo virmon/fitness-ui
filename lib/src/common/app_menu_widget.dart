@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 // Usage:
 // declare a list of menu items List<MenuItem>:
@@ -21,39 +22,49 @@ class MenuItem {
 }
 
 class AppMenuWidget extends StatelessWidget {
-  const AppMenuWidget({super.key, required this.menuItems});
+  const AppMenuWidget({
+    super.key,
+    required this.menuItems,
+    this.shouldCloseOnTap = true,
+  });
   final List<MenuItem> menuItems;
+  final bool shouldCloseOnTap;
 
   @override
   Widget build(BuildContext context) {
+    final double bottomSpaceHeight = 28.0;
+    final double iconSpacing = 10.0;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
           child: Visibility(
             visible: menuItems.isNotEmpty,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 0.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ...menuItems.map(
-                    (item) => SizedBox(
-                      height: 64,
-                      child: ListTile(
-                        leading: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, right: 10.0),
-                          child: Icon(item.icon),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ...menuItems.map(
+                  (menuItem) => SizedBox(
+                    child: ListTile(
+                      leading: Padding(
+                        padding: EdgeInsets.only(
+                          left: iconSpacing,
+                          right: iconSpacing,
                         ),
-                        title: Text(item.title),
-                        onTap: item.callback,
+                        child: Icon(menuItem.icon),
                       ),
+                      title: Text(menuItem.title),
+                      onTap: () {
+                        if (shouldCloseOnTap) {
+                          context.pop();
+                        }
+                        menuItem.callback();
+                      },
                     ),
                   ),
-                  SizedBox(height: 24)
-                ],
-              ),
+                ),
+                SizedBox(height: bottomSpaceHeight),
+              ],
             ),
           ),
         )
