@@ -11,20 +11,27 @@ class RoutineService {
   final Ref ref;
   final _currentRoutine = InMemoryStore<String?>(null);
 
-  String? getSelectedRoutine() {
+  String? getSelectedRoutineId() {
     return _currentRoutine.value;
   }
 
-  void setSelectedRoutine(String routineId) {
+  void setSelectedRoutineId(String routineId) {
     _currentRoutine.value = routineId;
   }
 
-  void clearSelectedRoutine() {
+  void clearSelectedRoutineId() {
     _currentRoutine.value = null;
   }
 
   void createRoutine(Routine routine) {
     ref.read(routinesRepositoryProvider).setRoutine(routine);
+  }
+
+  Routine? getCurrentRoutine() {
+    String? routineId = getSelectedRoutineId();
+    Routine? routine =
+        ref.read(routinesRepositoryProvider).getRoutineById(routineId!);
+    return routine;
   }
 
   Future<void> addExercise(
@@ -44,7 +51,7 @@ class RoutineService {
 
   Future<void> removeExercise(Exercise exercise) async {
     try {
-      String? routineId = getSelectedRoutine();
+      String? routineId = getSelectedRoutineId();
       final routine =
           ref.read(routinesRepositoryProvider).getRoutineById(routineId!);
       Routine updatedRoutine = routine!.removeExerciseById(exercise.id);

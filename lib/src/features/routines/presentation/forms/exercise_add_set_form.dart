@@ -142,7 +142,7 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
 
   @override
   Widget build(BuildContext context) {
-    final routineId = ref.read(routineServiceProvider).getSelectedRoutine();
+    final routineId = ref.read(routineServiceProvider).getSelectedRoutineId();
     final routine = ref.watch(routineProvider(routineId ?? '0'));
 
     String saveButtonText =

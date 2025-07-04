@@ -97,7 +97,7 @@ class ListSectionItem extends StatelessWidget {
                               if (routineId != null) {
                                 ref
                                     .read(routineServiceProvider)
-                                    .setSelectedRoutine(routineId);
+                                    .setSelectedRoutineId(routineId);
                                 context.goNamed(AppRoute.workoutPlan.name);
                               }
                             },

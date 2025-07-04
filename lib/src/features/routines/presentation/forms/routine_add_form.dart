@@ -1,4 +1,5 @@
 import 'package:fitness_ui/src/common/typography.dart';
+import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
@@ -7,7 +8,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class RoutineAddForm extends ConsumerStatefulWidget {
-  const RoutineAddForm({super.key});
+  final bool isUpdateForm;
+
+  const RoutineAddForm({
+    super.key,
+    this.isUpdateForm = false,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _RoutineAddFormState();
@@ -22,6 +28,10 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
   void initState() {
     super.initState();
 
+    if (widget.isUpdateForm) {
+      final routine = ref.read(routineServiceProvider).getCurrentRoutine();
+      addRoutineFormController.text = routine?.title ?? '';
+    }
     addRoutineFormController.addListener(_printLatestValue);
   }
 
@@ -34,27 +44,42 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
   void _printLatestValue() {
     setState(() {
       _newRoutineTitle = addRoutineFormController.text;
-      if (addRoutineFormController.text.isEmpty) {
-        _isButtonDisabled = true;
-      } else {
-        _isButtonDisabled = false;
-      }
+      _isButtonDisabled = addRoutineFormController.text.isEmpty;
     });
   }
 
   void _createRoutineTitle() {
-    ref.watch(routineServiceProvider).clearSelectedRoutine();
+    ref.watch(routineServiceProvider).clearSelectedRoutineId();
     ref
         .read(routineServiceProvider)
         .createRoutine(Routine(title: _newRoutineTitle));
     context.pop();
     context.goNamed(AppRoute.workoutPlan.name,
         queryParameters: {'title': _newRoutineTitle});
-    ref.read(routineServiceProvider).setSelectedRoutine(_newRoutineTitle);
+    ref.read(routineServiceProvider).setSelectedRoutineId(_newRoutineTitle);
+  }
+
+  void _editRoutineTitile() {
+    final currentRoutine = ref.read(routineServiceProvider).getCurrentRoutine();
+
+    Routine updatedRoutine = Routine(
+      id: currentRoutine!.id,
+      title: _newRoutineTitle,
+      notes: currentRoutine.notes,
+      exercises: currentRoutine.exercises,
+      isPrivate: currentRoutine.isPrivate,
+    );
+
+    ref.read(routineServiceProvider).createRoutine(updatedRoutine);
+    context.pop();
   }
 
   @override
   Widget build(BuildContext context) {
+    String formLabel =
+        widget.isUpdateForm ? AppRoutine.renameRoutine : AppRoutine.nameRoutine;
+    String buttonText = widget.isUpdateForm ? 'Rename' : 'Create';
+
     return SizedBox(
       height: 300,
       child: Center(
@@ -74,7 +99,7 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
                 ],
               ),
             ),
-            const TitleHeader(text: 'Name your new Routine'),
+            TitleHeader(text: formLabel),
             SizedBox(
               width: 350,
               child: Padding(
@@ -99,9 +124,10 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
                   backgroundColor:
                       _isButtonDisabled ? Colors.grey : Colors.indigo,
                 ),
-                onPressed: () =>
-                    _isButtonDisabled ? null : _createRoutineTitle(),
-                child: const Text('Create'))
+                onPressed: () => widget.isUpdateForm
+                    ? _editRoutineTitile()
+                    : _createRoutineTitle(),
+                child: Text(buttonText))
           ],
         ),
       ),
