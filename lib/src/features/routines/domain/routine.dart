@@ -9,18 +9,18 @@ String routineToJson(List<Routine> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Routine {
-  final String id;
+  final String? id;
   final String title;
-  final String notes;
+  final String? notes;
   final List<Exercise> exercises;
   final bool isPrivate;
 
   const Routine({
-    required this.id,
+    this.id,
     required this.title,
-    required this.notes,
-    required this.exercises,
-    required this.isPrivate,
+    this.notes,
+    this.exercises = const [],
+    this.isPrivate = true,
   });
 
   factory Routine.fromJson(Map<String, dynamic> json) => Routine(
@@ -39,4 +39,19 @@ class Routine {
         "exercises": List<dynamic>.from(exercises.map((x) => x.toJson())),
         "isPrivate": isPrivate,
       };
+
+  Routine copyWith({
+    String? id,
+    String? title,
+    String? notes,
+    List<Exercise>? exercises,
+    bool? isPrivate,
+  }) =>
+      Routine(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        notes: notes ?? this.notes,
+        exercises: exercises ?? this.exercises,
+        isPrivate: isPrivate ?? this.isPrivate,
+      );
 }

@@ -3,18 +3,18 @@ import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
 class Exercise {
   final String id;
   final String title;
-  final String description;
+  final String? description;
   final String type;
-  final String notes;
-  final List<ExerciseSet> exerciseSets;
+  final String? notes;
+  final List<ExerciseSet>? exerciseSets;
 
   const Exercise({
     required this.id,
     required this.title,
-    required this.description,
+    this.description,
     required this.type,
-    required this.notes,
-    required this.exerciseSets,
+    this.notes,
+    this.exerciseSets,
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) => Exercise(
@@ -33,7 +33,25 @@ class Exercise {
         "description": description,
         "type": type,
         "notes": notes,
-        "exercise_sets":
-            List<dynamic>.from(exerciseSets.map((x) => x.toJson())),
+        "exercise_sets": exerciseSets != null
+            ? List<dynamic>.from(exerciseSets!.map((x) => x.toJson()))
+            : [],
       };
+
+  Exercise copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? type,
+    String? notes,
+    List<ExerciseSet>? exerciseSets,
+  }) =>
+      Exercise(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        description: description ?? this.description,
+        type: type ?? this.type,
+        notes: notes ?? this.notes,
+        exerciseSets: exerciseSets ?? this.exerciseSets,
+      );
 }
