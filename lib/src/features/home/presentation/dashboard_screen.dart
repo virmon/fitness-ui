@@ -34,7 +34,7 @@ class DashboardScreen extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "Hello ${user?.displayName?.split(' ').first ?? 'John'}" + "!",
+                    "Hello ${user?.displayName?.split(' ').first ?? 'John'}" "!",
                     style: TextStyle(
                       fontSize: screenWidth * 0.08,
                       color: Colors.white,
