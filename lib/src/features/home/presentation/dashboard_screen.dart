@@ -333,7 +333,7 @@ class AppDrawer extends StatelessWidget {
                   // crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Height: 120 lbs",
+                      "Height:  5'3\"",
                       style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white,
@@ -341,7 +341,7 @@ class AppDrawer extends StatelessWidget {
                     ),
                     Padding(padding: EdgeInsetsGeometry.all(10)),
                     Text(
-                      "Weight: 5'3\"",
+                      "Weight: 120 lbs",
                       style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white,
