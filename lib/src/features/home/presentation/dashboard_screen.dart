@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitness_ui/src/routing/app_router.dart';
+import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:fitness_ui/src/common/alert_message_widget.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -9,21 +9,26 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return const Center(child: Text("Not logged in"));
+    }
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Dashboard'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              context.pushNamed(AppRoute.profile.name);
-            },
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.menu, color: Color(0xFFFF9408), size: 30),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer();
+              },
+            ),
           )
         ],
         automaticallyImplyLeading: false,
       ),
+      endDrawer: AppDrawer(user: user),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsetsGeometry.all(screenWidth * 0.04),
@@ -34,11 +39,11 @@ class DashboardScreen extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "Hello ${user?.displayName?.split(' ').first ?? 'John'}" "!",
+                    "Hello ${user?.displayName?.split(' ').first ?? 'John'}!",
                     style: TextStyle(
                       fontSize: screenWidth * 0.08,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                     )
                   )
                 ],
@@ -57,9 +62,9 @@ class DashboardScreen extends StatelessWidget {
               SizedBox(height: screenWidth * 0.025),
               Row(
                 children: [
-                  buildGradientStatCard(screenWidth, 'Workout Streak', '8 days'),
+                  BuildGradientStatCard(screenWidth, 'Workout Streak', '8 days'),
                   SizedBox(width: screenWidth * 0.035),
-                  buildStatCard(screenWidth, 'Workouts this\nweek', '8'),
+                  BuildStatCard(screenWidth, 'Workouts this\nweek', '8'),
                 ],
               ),
               SizedBox(height: screenWidth * 0.05),
@@ -76,7 +81,7 @@ class DashboardScreen extends StatelessWidget {
               SizedBox(height: screenWidth * 0.025),
               Row(
                 children: [
-                  buildLastWorkoutCard(screenWidth, 'Workout Name', 'XX/XX/XXXX', 'XX minutes'),
+                  BuildLastWorkoutCard(screenWidth, 'Workout Name', 'XX/XX/XXXX', 'XX minutes'),
                 ],
               ),
               SizedBox(height: screenWidth * 0.05),
@@ -93,15 +98,15 @@ class DashboardScreen extends StatelessWidget {
               SizedBox(height: screenWidth * 0.025),
               Row(
                 children: [
-                  buildStatCard(screenWidth, 'Average Workout\nDuration', '60 mins'),
+                  BuildStatCard(screenWidth, 'Average Workout\nDuration', '60 mins'),
                   SizedBox(width: screenWidth * 0.035),
-                  buildStatCard(screenWidth, 'Workouts this\nweek', '16'),
+                  BuildStatCard(screenWidth, 'Workouts this\nweek', '16'),
                 ],
               ),
               SizedBox(height: screenWidth * 0.035),
               Row(
                 children: [
-                  buildLongStatCard(screenWidth, 'Top Exercise this week', 'Push-ups'),
+                  BuildLongStatCard(screenWidth, 'Top Exercise this week', 'Push-ups'),
                 ],
               )
             ],
@@ -111,7 +116,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget buildGradientStatCard(double screenWidth, String title, String value){
+  Widget BuildGradientStatCard(double screenWidth, String title, String value){
     return Expanded(
       child: Container(
         height: screenWidth * 0.36,
@@ -147,7 +152,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget buildStatCard(double screenWidth, String statType, String statValue){
+  Widget BuildStatCard(double screenWidth, String statType, String statValue){
     return Expanded(
       child: Container(
         height: screenWidth * 0.36,
@@ -180,7 +185,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget buildLongStatCard(double screenWidth, String statTitle, String statValue){
+  Widget BuildLongStatCard(double screenWidth, String statTitle, String statValue){
     return Expanded(
       child: Container(
         height: screenWidth * 0.36,
@@ -213,7 +218,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget buildLastWorkoutCard(double screenWidth, String workoutTitle, String workoutDate, String workoutDuration){
+  Widget BuildLastWorkoutCard(double screenWidth, String workoutTitle, String workoutDate, String workoutDuration){
     return Expanded(
       child: Container(
         height: screenWidth * 0.36,
@@ -282,6 +287,134 @@ class DashboardScreen extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class AppDrawer extends StatelessWidget {
+  final User user;
+  const AppDrawer({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: const Color(0xFF1A1A1A),
+      child: Column(
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Color(0xFF1A1A1A),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: user.photoURL != null
+                      ? NetworkImage(user.photoURL!)
+                      : null,
+                  child: user.photoURL == null
+                      ? const Icon(Icons.person, size: 50)
+                      : null,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  user.displayName ?? "John Doe",
+                  style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold
+                  ),
+                ),
+                SizedBox(height: 5,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Height: 120 lbs",
+                      style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      ),
+                    ),
+                    Padding(padding: EdgeInsetsGeometry.all(10)),
+                    Text(
+                      "Weight: 5'3\"",
+                      style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home, color: Color(0xFFFF9408)),
+            title: const Text('Home', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const DashboardScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.fitness_center, color: Color(0xFFFF9408)),
+            title: const Text('My Workouts', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const WorkoutsScreen()),
+              // );
+            },
+          ),
+          const Spacer(),
+          Divider(color: Colors.grey, thickness: 0.4, height: 40),
+          ListTile(
+            leading: const Icon(Icons.settings, color: Color(0xFFFF9408)),
+            title: const Text('Settings', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const SettingsScreen()),
+              // );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person, color: Color(0xFFFF9408)),
+            title: const Text('Account', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Color(0xFFFF9408)),
+            title: const Text('Logout', style: TextStyle(color: Colors.white)),
+            onTap: (){
+              AlertMessageWidget.showConfirmationDialog(
+                context: context,
+                alertTitle: 'Log out',
+                alertQuestion: 'Are you sure you want to log out?',
+                onOk: () async {
+                  await FirebaseAuth.instance.signOut();
+                },
+                onCancel: () {
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }
