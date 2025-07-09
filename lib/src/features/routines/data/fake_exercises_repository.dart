@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fitness_ui/src/constants/mock_routines.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
+import 'package:fitness_ui/src/utils/delay.dart';
 import 'package:fitness_ui/src/utils/in_memory_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -33,6 +34,7 @@ class FakeExercisesRepository {
   }
 
   Future<List<Exercise>> searchExercises(String query) async {
+    await delay(true);
     assert(
       _exercises.value.length <= 100,
       'Client-side search should only be performed if the number of routines is small. '
@@ -55,7 +57,7 @@ class FakeExercisesRepository {
 }
 
 final exercisesRepositoryProvider = Provider<FakeExercisesRepository>((ref) {
-  return FakeExercisesRepository(hasDelay: false);
+  return FakeExercisesRepository();
 });
 
 final exercisesListStreamProvider =

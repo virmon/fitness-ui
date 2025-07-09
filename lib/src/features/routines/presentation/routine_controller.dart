@@ -9,9 +9,9 @@ class RoutineController extends AutoDisposeAsyncNotifier<List<Exercise>> {
   }
 
   void searchExercises(String query) async {
-    final exercisesRepository = ref.read(exercisesRepositoryProvider);
     state = const AsyncLoading();
-    state = AsyncValue.data(await exercisesRepository.searchExercises(query));
+    state = AsyncValue.data(
+        await ref.read(exercisesListSearchProvider(query).future));
   }
 }
 
