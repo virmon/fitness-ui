@@ -1,9 +1,10 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
+import 'package:fitness_ui/src/features/routines/data/fake_exercises_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
-import 'package:fitness_ui/src/features/routines/presentation/routine_controller.dart';
 import 'package:fitness_ui/src/features/routines/presentation/search/app_search_bar.dart';
+import 'package:fitness_ui/src/features/routines/presentation/search/search_query_notifier.dart';
 import 'package:flutter/material.dart' hide SearchBar;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,9 +17,17 @@ class AppSearchScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: SearchBar(),
+        title: AppSearchBar(),
         actions: [
-          IconButton(onPressed: () => context.pop(), icon: Icon(Icons.cancel))
+          Padding(
+            padding: const EdgeInsets.only(right: 15),
+            child: Center(
+              child: GestureDetector(
+                onTap: () => context.pop(),
+                child: const Text('Cancel'),
+              ),
+            ),
+          ),
         ],
       ),
       body: SearchResultList(),
@@ -31,12 +40,13 @@ class SearchResultList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final searchResults = ref.watch(routineControllerProvider);
+    final query = ref.watch(searchQueryNotifierProvider);
+    final searchResultAsync = ref.watch(exercisesListSearchProvider(query));
 
     return ListView(
       children: [
         AsyncValueWidget(
-          value: searchResults,
+          value: searchResultAsync,
           data: (data) => SearchResultListItem(items: data),
         ),
       ],

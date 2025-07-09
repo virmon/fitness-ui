@@ -12,7 +12,7 @@ class AsyncValueWidget<T> extends StatelessWidget {
     return value.when(
       data: data,
       error: (e, st) => Center(child: ErrorMessageWidget(e.toString())),
-      loading: () => Center(child: CircularProgressIndicator()),
+      loading: () => Center(child: LinearProgressIndicator()),
     );
   }
 }
