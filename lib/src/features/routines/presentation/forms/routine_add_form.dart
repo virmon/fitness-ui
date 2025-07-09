@@ -74,6 +74,18 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
     context.pop();
   }
 
+  void _saveRoutineTitle() {
+    if (widget.isUpdateForm && addRoutineFormController.text.isNotEmpty) {
+      _editRoutineTitile();
+    } else {
+      if (addRoutineFormController.text.isNotEmpty) {
+        _createRoutineTitle();
+      } else {
+        null;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String formLabel =
@@ -124,9 +136,7 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
                   backgroundColor:
                       _isButtonDisabled ? Colors.grey : Colors.indigo,
                 ),
-                onPressed: () => widget.isUpdateForm
-                    ? _editRoutineTitile()
-                    : _createRoutineTitle(),
+                onPressed: _saveRoutineTitle,
                 child: Text(buttonText))
           ],
         ),
