@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TitleHeader extends StatelessWidget {
-  const TitleHeader({super.key, required this.text});
+  const TitleHeader(
+    this.text, {
+    super.key,
+  });
   final String text;
 
   @override
@@ -17,13 +20,15 @@ class TitleHeader extends StatelessWidget {
 }
 
 class TextHeader extends StatelessWidget {
-  const TextHeader({super.key, required this.text});
+  const TextHeader(this.text, {super.key, this.overflow});
   final String text;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
+      overflow: overflow ?? TextOverflow.ellipsis,
       style: TextStyle(
         fontWeight: FontWeight.w700,
       ),

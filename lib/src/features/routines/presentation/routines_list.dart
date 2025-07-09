@@ -48,7 +48,7 @@ class ListSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TitleHeader(text: title),
+              TitleHeader(title),
               AsyncValueWidget(
                 value: content,
                 data: (data) => ListSectionItem(items: data),
@@ -89,7 +89,7 @@ class ListSectionItem extends StatelessWidget {
                                 height: 120,
                               ),
                             ),
-                            title: TextHeader(text: routine!.title),
+                            title: TextHeader(routine!.title),
                             subtitle: Text(
                                 '${routine.exercises.length.toString()} workouts'),
                             onTap: () {

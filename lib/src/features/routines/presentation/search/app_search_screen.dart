@@ -60,7 +60,7 @@ class SearchResultListItem extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(0),
                       child: ListTile(
-                        title: TextHeader(text: exercise!.title),
+                        title: TextHeader(exercise!.title),
                         subtitle: Text(exercise.type),
                         trailing: IconButton(
                           onPressed: () {

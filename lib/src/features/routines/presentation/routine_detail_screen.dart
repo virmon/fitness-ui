@@ -92,11 +92,9 @@ class RoutineDetailScreen extends StatelessWidget {
                                   Padding(
                                       padding:
                                           const EdgeInsets.only(left: 20.0),
-                                      child: TitleHeader(
-                                        text: routineTitle ??
-                                            routine?.title ??
-                                            '',
-                                      )),
+                                      child: TitleHeader(routineTitle ??
+                                          routine?.title ??
+                                          '')),
                                   Padding(
                                       padding:
                                           const EdgeInsets.only(left: 20.0),
@@ -125,7 +123,7 @@ class RoutineDetailScreen extends StatelessWidget {
                                                   // todo: implement start workout session
                                                 },
                                                 child: const TextHeader(
-                                                    text: AppRoutine.start)),
+                                                    AppRoutine.start)),
                                           ),
                                         ],
                                       ),
@@ -146,7 +144,7 @@ class RoutineDetailScreen extends StatelessWidget {
                                                     context.pushNamed(
                                                         AppRoute.search.name),
                                                 child: const TextHeader(
-                                                    text: AppRoutine.add)),
+                                                    AppRoutine.add)),
                                           ),
                                         ],
                                       ),
@@ -226,7 +224,7 @@ class ExerciseItem extends StatelessWidget {
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            TextHeader(text: exercise.value?.title ?? ''),
+                            TextHeader(exercise.value?.title ?? ''),
                           ],
                         ),
                         subtitle: Row(
