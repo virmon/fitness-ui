@@ -3,6 +3,7 @@ import 'package:fitness_ui/src/features/authentication/firebase_auth_repository.
 import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routine_detail_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_list_screen.dart';
+import 'package:fitness_ui/src/features/routines/presentation/search/app_search_screen.dart';
 import 'package:fitness_ui/src/routing/go_router_refresh_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +27,9 @@ enum AppRoute {
   home,
   workouts,
   workoutPlan,
+  newRoutine,
   profile,
+  search,
 }
 
 final goRouterProvider = Provider((ref) {
@@ -87,14 +90,23 @@ final goRouterProvider = Provider((ref) {
                       ),
                   routes: [
                     GoRoute(
-                      path: '/:id',
+                      path: '/detail',
                       name: AppRoute.workoutPlan.name,
                       builder: (context, state) {
-                        final routineId = state.pathParameters['id'];
-                        return RoutineDetailScreen(routineId: routineId);
+                        final routineTitle = state.uri.queryParameters['title'];
+                        return RoutineDetailScreen(routineTitle: routineTitle);
                       },
                     ),
                   ]),
+              GoRoute(
+                path: '/search',
+                name: AppRoute.search.name,
+                pageBuilder: (context, state) {
+                  return NoTransitionPage(
+                    child: AppSearchScreen(),
+                  );
+                },
+              ),
             ],
           ),
           StatefulShellBranch(
