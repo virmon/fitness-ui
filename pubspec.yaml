@@ -28,6 +28,7 @@ dependencies:
   sembast_web: ^2.4.2
   path_provider: ^2.1.5
   rxdart: ^0.28.0
+  toggle_switch: ^2.3.0
 
 dev_dependencies:
   flutter_test:
