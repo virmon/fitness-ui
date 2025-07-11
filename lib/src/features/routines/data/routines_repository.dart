@@ -1,5 +1,5 @@
 import 'package:fitness_ui/src/constants/mock_routines.dart';
-import 'package:fitness_ui/src/features/authentication/firebase_auth_repository.dart';
+import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

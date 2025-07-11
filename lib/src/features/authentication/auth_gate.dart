@@ -1,5 +1,4 @@
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-import 'package:fitness_ui/src/features/authentication/auth_provider.dart';
+import 'package:fitness_ui/src/features/authentication/application/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,10 +7,15 @@ class AuthGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authProviders = ref.watch(authProvidersProvider);
+    final authService = ref.watch(authServiceProvider);
     return Scaffold(
-      body: SignInScreen(
-        providers: authProviders,
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            authService.signIn();
+          },
+          child: Text('Sign in with Google'),
+        ),
       ),
     );
   }
