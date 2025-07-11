@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitness_ui/src/common/alert_message_widget.dart';
 import 'package:fitness_ui/src/common/date_provider.dart';
 import 'package:fitness_ui/src/common/unit_provider.dart';
+import 'package:fitness_ui/src/common/private_account_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -19,6 +20,8 @@ class UserSettingsScreen extends ConsumerWidget {
     final unit = ref.watch(weightUnitProvider);
     final index = unit == WeightUnit.lbs ? 0 : 1;
     final dateFormat = ref.watch(dateFormatProvider);
+    final privateAccount = ref.watch(privateAccountProvider);
+    final privateAccountNotifier = ref.read(privateAccountProvider.notifier);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -61,6 +64,36 @@ class UserSettingsScreen extends ConsumerWidget {
               padding: EdgeInsetsGeometry.all(18),
               child: Column(
                 children: [
+                  Text(
+                    'Account',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  SizedBox(height: 18,),
+                  Row(
+                    children: [
+                      Text(
+                        'Private Account',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16
+                        ),
+                      ),
+                      Spacer(),
+                      Switch(
+                        value: privateAccount,
+                        activeColor: Color(0xFFCA3F16),
+                        onChanged: (bool newValue) {
+                          privateAccountNotifier.state = newValue;
+                        }
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Divider(color: Color(0xFF2D2D2D)),
+                  SizedBox(height: 10),
                   Row(
                     children: [
                       Text(
@@ -128,6 +161,43 @@ class UserSettingsScreen extends ConsumerWidget {
                           );
                         }).toList(),
                       )
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Divider(color: Color(0xFF2D2D2D)),
+                  SizedBox(height: 10),
+                   Text(
+                    'Help',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  SizedBox(height: 18,),
+                  Row(
+                    children: [
+                      Text(
+                        'Permanently Delete \nAccount',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16
+                        ),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Color(0xFFCA3F16), size: 30,),
+                        onPressed: () {
+                          AlertMessageWidget.showConfirmationDialog(
+                            context: context,
+                            alertTitle: 'Delete Account',
+                            alertQuestion: 'Are you sure you want to delete your account? This will permanently erase your account.',
+                            onOk: () {
+                            },
+                            onCancel: () {
+                            },
+                          );
+                        },
+                      ),
                     ],
                   ),
                   SizedBox(height: 10),
