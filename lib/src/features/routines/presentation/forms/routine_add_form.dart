@@ -111,7 +111,7 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
                 ],
               ),
             ),
-            TitleHeader(text: formLabel),
+            TitleHeader(formLabel),
             SizedBox(
               width: 350,
               child: Padding(

@@ -312,9 +312,9 @@ class ExerciseSetList extends StatelessWidget {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                TextHeader(text: 'Set (${exerciseSets.length})'),
-                TextHeader(text: 'Weight'),
-                TextHeader(text: 'Rep Range'),
+                TextHeader('Set (${exerciseSets.length})'),
+                TextHeader('Weight'),
+                TextHeader('Rep Range'),
                 SizedBox(width: 25)
               ],
             ),
