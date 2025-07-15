@@ -31,21 +31,7 @@ class DashboardScreen extends StatelessWidget {
             child: Column(children: [
               ElevatedButton(
                   onPressed: () async {
-                    // ref.read(routinesListFutureProvider);
-                    ref.read(routinesPublicListFutureProvider);
-                  },
-                  child: Text('Fetch my routines')),
-              ElevatedButton(
-                  onPressed: () async {
-                    ref
-                        .read(routinesRepositoryProvider)
-                        .deleteRoutineById(routineId: '');
-                  },
-                  child: Text('Delete a routine')),
-              ElevatedButton(
-                  onPressed: () async {
                     ref.watch(authServiceProvider).logout();
-                    log('isLoggedIn: ${ref.watch(authServiceProvider).isLoggedIn}');
                   },
                   child: Text('Logout')),
             ]),
