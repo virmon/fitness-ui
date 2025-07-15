@@ -2,9 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitness_ui/src/features/authentication/data/app_user_repository.dart';
-import 'package:fitness_ui/src/features/authentication/domain/app_user.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthService {
@@ -14,31 +13,25 @@ class AuthService {
   bool _isLoggedIn = false;
   bool get isLoggedIn => _isLoggedIn;
 
-  Future<AppUser> _signInAppUser(UserCredential signedInUser) async {
+  Future<String> _getIdToken(User? user) async {
     try {
-      if (signedInUser.user != null) {
-        log('Sign in ${signedInUser.user!.email.toString()}');
-
-        return await ref.read(signInProvider({
-          'email': signedInUser.user!.email,
-          'password': 'hellothere',
-          'returnSecureToken': 'true',
-        }).future);
+      if (user != null) {
+        final token = await user.getIdToken();
+        log(token.toString());
+        return token!;
       } else {
-        log('Error: unable to retrieve user data');
-        throw Exception('Error: unable to retrieve user data');
+        log('unable to get user');
       }
-    } on FirebaseAuthException catch (e, _) {
-      log('FirebaseAuthException: ${e.message}');
-      rethrow;
+    } catch (e) {
+      log(e.toString());
+      throw Exception(e.toString());
     }
+    return '';
   }
 
-  void _storeAccessToken(appUser) {
+  void _saveToken(String token) async {
     _isLoggedIn = true;
-    // save token in app local store
-    log('signed in as ${appUser.email}');
-    log('token from API: ${appUser.idToken}');
+    log('save this token: $token');
   }
 
   void _handleSignInError(error, st) async {
@@ -46,11 +39,15 @@ class AuthService {
   }
 
   void signIn() async {
-    await ref
-        .read(authRepositoryProvider)
-        .signInWithGoogle()
-        .then((signedInUser) => _signInAppUser(signedInUser))
-        .then((appUser) => _storeAccessToken(appUser))
+    final Future<User?> Function() signInUser;
+    if (kIsWeb) {
+      signInUser = ref.read(authRepositoryProvider).signInWithGooglePopUp;
+    } else {
+      signInUser = ref.read(authRepositoryProvider).signInWithGoogle;
+    }
+    await signInUser()
+        .then((user) => _getIdToken(user))
+        .then((appUser) => _saveToken(appUser))
         .catchError(_handleSignInError);
   }
 

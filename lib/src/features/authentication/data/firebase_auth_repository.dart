@@ -13,7 +13,7 @@ class AuthRepository {
     return _auth.signInWithProvider(provider);
   }
 
-  Future<UserCredential> signInWithGoogle() async {
+  Future<User?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser != null) {
@@ -25,10 +25,23 @@ class AuthRepository {
           idToken: googleAuth.idToken,
         );
 
-        return await FirebaseAuth.instance.signInWithCredential(credential);
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        return userCredential.user;
       } else {
         return await Future.error('Sign-in cancelled or failed');
       }
+    } catch (error) {
+      throw Exception(error);
+    }
+  }
+
+  Future<User?> signInWithGooglePopUp() async {
+    try {
+      GoogleAuthProvider authProvider = GoogleAuthProvider();
+      UserCredential userCredential = await _auth.signInWithPopup(authProvider);
+      return userCredential.user;
     } catch (error) {
       throw Exception(error);
     }
