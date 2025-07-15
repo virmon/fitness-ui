@@ -23,21 +23,23 @@ class Routine {
     this.isPrivate = true,
   });
 
-  factory Routine.fromJson(Map<String, dynamic> json) => Routine(
-        id: json["id"],
-        title: json["title"],
-        notes: json["notes"],
-        exercises: List<Exercise>.from(
-            json["exercises"].map((x) => Exercise.fromJson(x))),
-        isPrivate: json["isPrivate"],
-      );
+  factory Routine.fromJson(Map<String, dynamic> json) {
+    return Routine(
+      id: json["routine_uid"],
+      title: json["title"],
+      notes: json["notes"],
+      exercises: List<Exercise>.from(
+          json["exercises"].map((exercise) => Exercise.fromJson(exercise))),
+      isPrivate: json["is_private"],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "routine_uid": id,
         "title": title,
         "notes": notes,
         "exercises": List<dynamic>.from(exercises.map((x) => x.toJson())),
-        "isPrivate": isPrivate,
+        "is_private": isPrivate,
       };
 
   Routine copyWith({

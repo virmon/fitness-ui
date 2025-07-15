@@ -5,31 +5,31 @@ class ExerciseSet {
   final int weight;
   final String weightUnit;
   final int restDuration;
+  final List? reps;
+  final int? rpe;
 
   const ExerciseSet({
     required this.setNo,
-    required this.repLower,
-    required this.repUpper,
+    this.repLower = 8,
+    this.repUpper = 8,
     required this.weight,
-    required this.weightUnit,
-    required this.restDuration,
+    this.weightUnit = 'LBS',
+    this.restDuration = 0,
+    this.reps = const [],
+    this.rpe = 0,
   });
 
   factory ExerciseSet.fromJson(Map<String, dynamic> json) => ExerciseSet(
-        setNo: json["set_no"],
-        repLower: json["rep_lower"],
-        repUpper: json["rep_upper"],
-        weight: json["weight"],
-        weightUnit: json["weight_unit:"],
-        restDuration: json["rest_duration"],
+        setNo: json["set_no"].toString(),
+        weight: 0,
+        reps: json["reps"] ?? [],
+        rpe: json["rpe"] ?? 0,
       );
 
   Map<String, dynamic> toJson() => {
-        "set_no": setNo,
-        "rep_lower": repLower,
-        "rep_upper": repUpper,
+        "set_no": int.parse(setNo),
         "weight": weight,
-        "weight_unit:": weightUnit,
-        "rest_duration": restDuration,
+        "reps:": reps,
+        "rpe": rpe,
       };
 }

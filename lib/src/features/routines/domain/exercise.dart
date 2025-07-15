@@ -4,37 +4,40 @@ class Exercise {
   final String id;
   final String title;
   final String? description;
+  final int? restTimeSecs;
   final String type;
   final String? notes;
   final List<ExerciseSet>? exerciseSets;
+  final List<ExerciseSet>? sets;
 
   const Exercise({
     required this.id,
     required this.title,
-    this.description,
-    required this.type,
-    this.notes,
+    this.description = '',
+    this.restTimeSecs = 0,
+    this.type = '',
+    this.notes = '',
     this.exerciseSets,
+    this.sets,
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) => Exercise(
         id: json["id"],
         title: json["title"],
-        description: json["description"],
-        type: json["type"],
+        restTimeSecs: json["rest_time_secs"],
         notes: json["notes"],
-        exerciseSets: List<ExerciseSet>.from(
-            json["exercise_sets"].map((x) => ExerciseSet.fromJson(x))),
+        sets: List<ExerciseSet>.from(
+            json["sets"].map((s) => ExerciseSet.fromJson(s))),
+        exerciseSets: [],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "title": title,
-        "description": description,
-        "type": type,
+        "rest_time_secs": restTimeSecs,
         "notes": notes,
-        "exercise_sets": exerciseSets != null
-            ? List<dynamic>.from(exerciseSets!.map((x) => x.toJson()))
+        "sets": sets != null
+            ? List<dynamic>.from(sets!.map((x) => x.toJson()))
             : [],
       };
 
@@ -42,16 +45,20 @@ class Exercise {
     String? id,
     String? title,
     String? description,
+    int? restTimeSecs,
     String? type,
     String? notes,
     List<ExerciseSet>? exerciseSets,
+    List<ExerciseSet>? sets,
   }) =>
       Exercise(
         id: id ?? this.id,
         title: title ?? this.title,
         description: description ?? this.description,
+        restTimeSecs: restTimeSecs ?? this.restTimeSecs,
         type: type ?? this.type,
         notes: notes ?? this.notes,
         exerciseSets: exerciseSets ?? this.exerciseSets,
+        sets: sets ?? this.sets,
       );
 }

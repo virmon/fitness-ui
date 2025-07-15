@@ -1,5 +1,5 @@
 import 'package:fitness_ui/src/features/authentication/auth_gate.dart';
-import 'package:fitness_ui/src/features/authentication/firebase_auth_repository.dart';
+import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routine_detail_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_list_screen.dart';
