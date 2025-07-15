@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitness_ui/src/features/authentication/data/app_user_repository.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,7 +32,7 @@ class AuthService {
 
   void _saveToken(String token) async {
     _isLoggedIn = true;
-    log('save this token: $token');
+    ref.read(appUserRepositoryProvider).setToken(token);
   }
 
   void _handleSignInError(error, st) async {
@@ -54,8 +55,7 @@ class AuthService {
   void logout() async {
     await ref.read(authRepositoryProvider).signOut();
     _isLoggedIn = false;
-    // clear saved token
-    log('clear token');
+    ref.read(appUserRepositoryProvider).clearToken();
   }
 }
 

@@ -3,12 +3,27 @@ import 'dart:developer';
 
 import 'package:fitness_ui/src/features/authentication/domain/app_user.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
+import 'package:fitness_ui/src/utils/in_memory_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 class AppUserRepository {
   AppUserRepository(this.ref);
   Ref ref;
+
+  final _token = InMemoryStore<String?>(null);
+
+  String? getToken() {
+    return _token.value;
+  }
+
+  void setToken(String token) {
+    _token.value = token;
+  }
+
+  void clearToken() {
+    _token.value = null;
+  }
 
   Future<AppUser> signUp(credentials) async {
     try {

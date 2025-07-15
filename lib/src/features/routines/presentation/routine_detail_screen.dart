@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:fitness_ui/src/common/app_menu_widget.dart';
 import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
-import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
+import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
+// import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/routine_add_form.dart';
@@ -34,8 +37,16 @@ class RoutineDetailScreen extends StatelessWidget {
         RoutineMenu.remove,
         Icons.remove_circle_outline,
         () {
-          ref.read(routinesRepositoryProvider).removeRoutine(routineId);
+          // ref.read(routinesRepositoryProvider).removeRoutine(routineId);
+          log('deleting $routineId');
+          ref
+              .read(routinesRepositoryProvider)
+              .deleteRoutineById(routineId: routineId);
           context.pop();
+          ScaffoldMessenger.of(context)
+            ..removeCurrentSnackBar()
+            ..showSnackBar(
+                SnackBar(content: Text('successfully deleted $routineId')));
         },
       ),
     ];
@@ -132,8 +143,7 @@ class RoutineDetailScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Visibility(
-                                    visible:
-                                        routine?.exercises.isEmpty ?? false,
+                                    visible: routine?.exercises.isEmpty ?? true,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Column(

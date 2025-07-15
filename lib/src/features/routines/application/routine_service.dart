@@ -1,4 +1,5 @@
-import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
+// import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
+import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/mutable_routine.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
@@ -24,7 +25,8 @@ class RoutineService {
   }
 
   void createRoutine(Routine routine) {
-    ref.read(routinesRepositoryProvider).setRoutine(routine);
+    // ref.read(routinesRepositoryProvider).setRoutine(routine);
+    ref.read(routinesRepositoryProvider).addRoutine(routine);
   }
 
   Routine? getCurrentRoutine() {
@@ -54,6 +56,7 @@ class RoutineService {
       String? routineId = getSelectedRoutineId();
       final routine =
           ref.read(routinesRepositoryProvider).getRoutineById(routineId!);
+      // Routine updatedRoutine = routine!.removeExerciseById(exercise.id);
       Routine updatedRoutine = routine!.removeExerciseById(exercise.id);
       createRoutine(updatedRoutine);
     } catch (e) {

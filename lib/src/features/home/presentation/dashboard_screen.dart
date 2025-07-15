@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:fitness_ui/src/features/authentication/application/auth_service.dart';
+import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,12 +27,29 @@ class DashboardScreen extends StatelessWidget {
       ),
       body: Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
-          return ElevatedButton(
-              onPressed: () async {
-                ref.watch(authServiceProvider).logout();
-                log('isLoggedIn: ${ref.watch(authServiceProvider).isLoggedIn}');
-              },
-              child: Text('Logout'));
+          return Center(
+            child: Column(children: [
+              ElevatedButton(
+                  onPressed: () async {
+                    // ref.read(routinesListFutureProvider);
+                    ref.read(routinesPublicListFutureProvider);
+                  },
+                  child: Text('Fetch my routines')),
+              ElevatedButton(
+                  onPressed: () async {
+                    ref
+                        .read(routinesRepositoryProvider)
+                        .deleteRoutineById(routineId: '');
+                  },
+                  child: Text('Delete a routine')),
+              ElevatedButton(
+                  onPressed: () async {
+                    ref.watch(authServiceProvider).logout();
+                    log('isLoggedIn: ${ref.watch(authServiceProvider).isLoggedIn}');
+                  },
+                  child: Text('Logout')),
+            ]),
+          );
         },
         child: Center(
           child: Column(

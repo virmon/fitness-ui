@@ -33,7 +33,7 @@ class RoutinesListScreen extends StatelessWidget {
         ),
         body: TabBarView(children: [
           RoutinesList(title: 'My Routines'),
-          RoutinesList(title: 'Explore'),
+          RoutinesList(title: 'Explore', showPublicRoutines: true),
         ]),
         floatingActionButton: FloatingActionButton(
           onPressed: () => {
