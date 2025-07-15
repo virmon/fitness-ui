@@ -20,3 +20,7 @@ class ExerciseMenu {
   static const edit = 'Edit Exercise Sets';
   static const remove = 'Remove Exercise';
 }
+
+class Api {
+  static const baseUrl = 'https://fitness-server-8ht3.onrender.com/';
+}

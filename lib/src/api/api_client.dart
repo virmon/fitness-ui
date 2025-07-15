@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:fitness_ui/src/api/authentication_interceptor.dart';
+import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ApiClient {
@@ -52,12 +53,11 @@ final apiClientProvider = Provider((ref) {
 });
 
 final dioProvider = Provider<Dio>((ref) {
-  // final dio = ref.read(apiClientProvider).client;
-  final dio = Dio();
-  dio.options.baseUrl = 'https://fitness-server-8ht3.onrender.com/';
+  final dio = ref.read(apiClientProvider).client;
+  dio.options.baseUrl = Api.baseUrl;
 
   dio.interceptors.addAll([
-    AuthenticationInterceptor(ref: ref),
+    AuthenticationInterceptor(ref: ref, retry: () => {}),
     LogInterceptor(
       requestBody: true,
       responseBody: true,

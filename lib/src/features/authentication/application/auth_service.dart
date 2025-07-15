@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitness_ui/src/features/authentication/data/app_user_repository.dart';
+import 'package:fitness_ui/src/features/authentication/authentication_notifier.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +18,8 @@ class AuthService {
     try {
       if (user != null) {
         final token = await user.getIdToken();
-        log(token.toString());
+        final refreshToken = user.refreshToken;
+        log(refreshToken.toString());
         return token!;
       } else {
         log('unable to get user');
@@ -32,7 +33,7 @@ class AuthService {
 
   void _saveToken(String token) async {
     _isLoggedIn = true;
-    ref.read(appUserRepositoryProvider).setToken(token);
+    ref.read(authStateNotifierProvider.notifier).setToken(token);
   }
 
   void _handleSignInError(error, st) async {
@@ -55,7 +56,7 @@ class AuthService {
   void logout() async {
     await ref.read(authRepositoryProvider).signOut();
     _isLoggedIn = false;
-    ref.read(appUserRepositoryProvider).clearToken();
+    ref.read(authStateNotifierProvider.notifier).clearToken();
   }
 }
 
