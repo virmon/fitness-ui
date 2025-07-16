@@ -57,7 +57,7 @@ final dioProvider = Provider<Dio>((ref) {
   dio.options.baseUrl = Api.baseUrl;
 
   dio.interceptors.addAll([
-    AuthenticationInterceptor(ref: ref, retry: () => {}),
+    AuthenticationInterceptor(ref: ref),
     LogInterceptor(
       requestBody: true,
       responseBody: true,
