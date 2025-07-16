@@ -47,6 +47,14 @@ class AuthRepository {
     }
   }
 
+  Future<String?> getNewIdToken() async {
+    String? newIdToken;
+    if (currentUser != null) {
+      newIdToken = await currentUser!.getIdToken(true);
+    }
+    return newIdToken;
+  }
+
   Future<void> signOut() async {
     return _auth.signOut();
   }

@@ -3,15 +3,14 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:fitness_ui/src/features/authentication/authentication_notifier.dart';
+import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AuthenticationInterceptor extends InterceptorsWrapper {
-  final Function retry;
   Ref ref;
 
   AuthenticationInterceptor({
     required this.ref,
-    required this.retry,
   });
 
   @override
@@ -20,7 +19,6 @@ class AuthenticationInterceptor extends InterceptorsWrapper {
     try {
       String? token =
           await ref.read(authStateNotifierProvider.notifier).getToken();
-      log('[ACCESS_TOKEN] $token');
       if (token != null) {
         final headers = {
           HttpHeaders.acceptHeader: 'application/json',
@@ -47,14 +45,13 @@ class AuthenticationInterceptor extends InterceptorsWrapper {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
-      String? newAccessToken = await Future.value(
-          'refresh-token'); // fetch your token from some other source
-      if (newAccessToken != null) {
+      String? newIdToken =
+          await ref.read(authRepositoryProvider).getNewIdToken();
+      if (newIdToken != null) {
         try {
-          err.requestOptions.headers['Authorization'] =
-              'Bearer $newAccessToken';
-          // todo: implement a way to retrieve a refresh token
-          handler.resolve(await retry(err.requestOptions));
+          ref.read(authStateNotifierProvider.notifier).setToken(newIdToken);
+          err.requestOptions.headers['Authorization'] = 'Bearer $newIdToken';
+          handler.resolve(await retryRequest(err.requestOptions));
         } on DioException catch (e) {
           handler.next(e);
         }
@@ -62,5 +59,10 @@ class AuthenticationInterceptor extends InterceptorsWrapper {
       return;
     }
     super.onError(err, handler);
+  }
+
+  Future<Response> retryRequest(RequestOptions requestOptions) async {
+    final dio = Dio();
+    return await dio.fetch(requestOptions);
   }
 }
