@@ -1,8 +1,8 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
-import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,10 +16,9 @@ class RoutinesList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = showPublicRoutines
-        ? routinesPublicListFutureProvider
-        : routinesListFutureProvider;
-    final routines = ref.watch(provider);
+    final asyncRoutines = showPublicRoutines
+        ? ref.watch(routinesControllerPublicListProvider(showPublicRoutines))
+        : ref.watch(routinesControllerProvider);
 
     return ListView(
       children: [
@@ -29,7 +28,7 @@ class RoutinesList extends ConsumerWidget {
             children: [
               ListSection(
                 title: title,
-                content: routines,
+                content: asyncRoutines,
               ),
             ],
           ),

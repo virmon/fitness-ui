@@ -2,6 +2,7 @@ import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,8 +52,8 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
   void _createRoutineTitle() {
     ref.watch(routineServiceProvider).clearSelectedRoutineId();
     ref
-        .read(routineServiceProvider)
-        .createRoutine(Routine(title: _newRoutineTitle));
+        .read(routinesControllerProvider.notifier)
+        .addRoutine(Routine(title: _newRoutineTitle));
     context.pop();
     context.goNamed(AppRoute.workoutPlan.name,
         queryParameters: {'title': _newRoutineTitle});

@@ -2,7 +2,7 @@ import 'package:fitness_ui/src/features/routines/data/fake_exercises_repository.
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RoutineController extends AutoDisposeAsyncNotifier<List<Exercise>> {
+class SearchController extends AutoDisposeAsyncNotifier<List<Exercise>> {
   @override
   List<Exercise> build() {
     return [];
@@ -15,7 +15,7 @@ class RoutineController extends AutoDisposeAsyncNotifier<List<Exercise>> {
   }
 }
 
-final routineControllerProvider =
-    AsyncNotifierProvider.autoDispose<RoutineController, List<Exercise>>(() {
-  return RoutineController();
+final searchControllerProvider =
+    AsyncNotifierProvider.autoDispose<SearchController, List<Exercise>>(() {
+  return SearchController();
 });

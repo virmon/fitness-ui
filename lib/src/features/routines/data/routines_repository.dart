@@ -4,8 +4,6 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:fitness_ui/src/api/api_client.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
-import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
-import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:fitness_ui/src/utils/in_memory_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,8 +23,7 @@ class RoutinesRepository {
       final fetchedData = response.data as List;
       List<Routine>? routines = List<Routine>.from(
           fetchedData.map((routine) => Routine.fromJson(routine)));
-      _cachedRoutines.value = routines;
-      return Future.value(_cachedRoutines.value);
+      return Future.value(routines);
     } catch (e) {
       log(e.toString());
       throw Exception(e.toString());
@@ -40,8 +37,7 @@ class RoutinesRepository {
       final fetchedData = response.data as List;
       List<Routine>? routines = List<Routine>.from(
           fetchedData.map((routine) => Routine.fromJson(routine)));
-      _cachedRoutines.value = routines;
-      return Future.value(_cachedRoutines.value);
+      return Future.value(routines);
     } catch (e) {
       log(e.toString());
       throw Exception(e.toString());
@@ -74,23 +70,15 @@ class RoutinesRepository {
     log('update this routine ${routine.id}');
   }
 
-  Future<void> addRoutine(Routine? routine) async {
+  Future<void> addRoutine(Routine routine) async {
     try {
-      if (routine?.id == null) {
-        Routine myNewRoutine = Routine(
-          id: routine!.title,
-          title: routine.title,
-          exercises: routine.exercises,
-          isPrivate: true,
-        );
+      if (routine.id == null) {
         final client = ref.read(dioProvider);
         final response =
             await client.post('/api/routines/', data: routine.toJson());
         log(response.toString());
-        final routines = _cachedRoutines.value;
-        routines.add(myNewRoutine);
       } else {
-        _updateRoutineById(routine!);
+        _updateRoutineById(routine);
       }
     } catch (e, st) {
       log(e.toString());
@@ -100,8 +88,6 @@ class RoutinesRepository {
   }
 
   Future<bool> deleteRoutineById({required String routineId}) async {
-    final routines = _cachedRoutines.value;
-    routines.removeWhere((routine) => routine.id == routineId);
     try {
       final client = ref.read(dioProvider);
       final response = await client.delete('$routinesEndpoint$routineId');

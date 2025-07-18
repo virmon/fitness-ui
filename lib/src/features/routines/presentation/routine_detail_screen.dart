@@ -6,10 +6,10 @@ import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
-// import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/routine_add_form.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,11 +37,10 @@ class RoutineDetailScreen extends StatelessWidget {
         RoutineMenu.remove,
         Icons.remove_circle_outline,
         () {
-          // ref.read(routinesRepositoryProvider).removeRoutine(routineId);
           log('deleting $routineId');
           ref
-              .read(routinesRepositoryProvider)
-              .deleteRoutineById(routineId: routineId);
+              .read(routinesControllerProvider.notifier)
+              .deleteRoutine(routineId);
           context.pop();
           ScaffoldMessenger.of(context)
             ..removeCurrentSnackBar()
