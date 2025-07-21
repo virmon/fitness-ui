@@ -9,6 +9,7 @@ import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/routine_add_form.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routine_controller.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
@@ -67,9 +68,17 @@ class RoutineDetailScreen extends StatelessWidget {
             ref.watch(routineServiceProvider).getSelectedRoutineId();
 
         AsyncValue routineValue = AsyncData([]);
+        log('[routinerId] ${routineId.toString()}');
+        log('[routineTitle] ${routineTitle.toString()}');
         if (routineId == null) {
-          context.goNamed(AppRoute.workouts.name);
+          log('Routine ID is null');
+          log('fetching newly created routine');
+          routineValue = ref.watch(activeRoutineControllerProvider);
+          log('[routineValue] ${routineValue.valueOrNull}');
+          // context.goNamed(AppRoute.workouts.name);
         } else {
+          log('fetching existing selected routine');
+          routineValue = AsyncValue.loading();
           routineValue = ref.watch(routineProvider(routineId));
         }
 
@@ -77,7 +86,8 @@ class RoutineDetailScreen extends StatelessWidget {
             appBar: AppBar(
               actions: [
                 IconButton(
-                  onPressed: () => _showRoutineMenu(context, ref, routineId!),
+                  onPressed: () =>
+                      _showRoutineMenu(context, ref, routineId ?? ''),
                   icon: Icon(Icons.more_horiz_rounded),
                 ),
               ],
@@ -99,6 +109,10 @@ class RoutineDetailScreen extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 20.0),
+                                      child: TitleHeader(routine?.id ?? '')),
                                   Padding(
                                       padding:
                                           const EdgeInsets.only(left: 20.0),

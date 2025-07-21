@@ -1,4 +1,6 @@
 // import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
+import 'dart:developer';
+
 import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/mutable_routine.dart';
@@ -10,17 +12,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RoutineService {
   RoutineService(this.ref);
   final Ref ref;
-  final _currentRoutine = InMemoryStore<String?>(null);
+  final _currentRoutineId = InMemoryStore<String?>(null);
+  final _currentRoutine = InMemoryStore<Routine?>(null);
 
   String? getSelectedRoutineId() {
-    return _currentRoutine.value;
+    return _currentRoutineId.value;
   }
 
   void setSelectedRoutineId(String routineId) {
-    _currentRoutine.value = routineId;
+    _currentRoutineId.value = routineId;
   }
 
   void clearSelectedRoutineId() {
+    _currentRoutineId.value = null;
+  }
+
+  Routine? getSelectedRoutine() {
+    return _currentRoutine.value;
+  }
+
+  void setSelectedRoutine(Routine routine) {
+    // log(routine.title.toString());
+    _currentRoutine.value = routine;
+  }
+
+  void clearSelectedRoutine() {
     _currentRoutine.value = null;
   }
 
@@ -29,10 +45,13 @@ class RoutineService {
     ref.read(routinesRepositoryProvider).addRoutine(routine);
   }
 
-  Routine? getCurrentRoutine() {
+  Future<Routine?> fetchCurrentRoutine() async {
     String? routineId = getSelectedRoutineId();
-    Routine? routine =
-        ref.read(routinesRepositoryProvider).getRoutineById(routineId!);
+    Routine? routine;
+    if (routineId != null) {
+      routine =
+          await ref.read(routinesRepositoryProvider).getRoutineById(routineId);
+    }
     return routine;
   }
 
@@ -53,12 +72,11 @@ class RoutineService {
 
   Future<void> removeExercise(Exercise exercise) async {
     try {
-      String? routineId = getSelectedRoutineId();
-      final routine =
-          ref.read(routinesRepositoryProvider).getRoutineById(routineId!);
-      // Routine updatedRoutine = routine!.removeExerciseById(exercise.id);
-      Routine updatedRoutine = routine!.removeExerciseById(exercise.id);
-      createRoutine(updatedRoutine);
+      // String? routineId = getSelectedRoutineId();
+      // final routine =
+      //     ref.read(routinesRepositoryProvider).getRoutineById(routineId!);
+      // Routine updatedRoutine = routine.removeExerciseById(exercise.id);
+      // createRoutine(updatedRoutine);
     } catch (e) {
       FlutterError.onError!(FlutterErrorDetails(exception: e));
     }

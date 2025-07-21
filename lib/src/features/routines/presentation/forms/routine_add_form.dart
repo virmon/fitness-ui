@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routine_controller.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +33,7 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
     super.initState();
 
     if (widget.isUpdateForm) {
-      final routine = ref.read(routineServiceProvider).getCurrentRoutine();
+      final routine = ref.read(routineServiceProvider).getSelectedRoutine();
       addRoutineFormController.text = routine?.title ?? '';
     }
     addRoutineFormController.addListener(_printLatestValue);
@@ -49,29 +52,35 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
     });
   }
 
-  void _createRoutineTitle() {
+  void _createRoutineTitle() async {
     ref.watch(routineServiceProvider).clearSelectedRoutineId();
-    ref
+    ref.watch(routineServiceProvider).clearSelectedRoutine();
+    final hasCreatedNewRoutine = await ref
         .read(routinesControllerProvider.notifier)
         .addRoutine(Routine(title: _newRoutineTitle));
+
+    if (hasCreatedNewRoutine) {
+      _navigateRoutineDetailScreen();
+    }
+  }
+
+  void _navigateRoutineDetailScreen() {
     context.pop();
-    context.goNamed(AppRoute.workoutPlan.name,
-        queryParameters: {'title': _newRoutineTitle});
-    ref.read(routineServiceProvider).setSelectedRoutineId(_newRoutineTitle);
+    context.goNamed(AppRoute.workoutPlan.name);
   }
 
   void _editRoutineTitile() {
-    final currentRoutine = ref.read(routineServiceProvider).getCurrentRoutine();
+    // final currentRoutine = ref.read(routineServiceProvider).getCurrentRoutine();
 
-    Routine updatedRoutine = Routine(
-      id: currentRoutine!.id,
-      title: _newRoutineTitle,
-      notes: currentRoutine.notes,
-      exercises: currentRoutine.exercises,
-      isPrivate: currentRoutine.isPrivate,
-    );
+    // Routine updatedRoutine = Routine(
+    //   id: currentRoutine.id,
+    //   title: _newRoutineTitle,
+    //   notes: currentRoutine.notes,
+    //   exercises: currentRoutine.exercises,
+    //   isPrivate: currentRoutine.isPrivate,
+    // );
 
-    ref.read(routineServiceProvider).createRoutine(updatedRoutine);
+    // ref.read(routineServiceProvider).createRoutine(updatedRoutine);
     context.pop();
   }
 

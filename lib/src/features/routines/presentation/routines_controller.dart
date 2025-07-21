@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,12 +21,19 @@ class RoutinesController
     return fetchRoutines();
   }
 
-  Future<void> addRoutine(Routine routine) async {
+  Future<bool> addRoutine(Routine routine) async {
+    bool retVal = false;
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await ref.read(routinesRepositoryProvider).addRoutine(routine);
+      final newRoutine =
+          await ref.read(routinesRepositoryProvider).addRoutine(routine);
+      log(newRoutine!.id.toString());
+      ref.read(routineServiceProvider).setSelectedRoutineId(newRoutine.id!);
+      ref.read(routineServiceProvider).setSelectedRoutine(newRoutine);
+      retVal = true;
       return fetchRoutines();
     });
+    return retVal;
   }
 
   // todo: implement update routine controller
