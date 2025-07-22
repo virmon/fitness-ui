@@ -3,7 +3,9 @@ import 'dart:developer';
 
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
+import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routine_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoutinesController
@@ -36,8 +38,49 @@ class RoutinesController
     return retVal;
   }
 
-  // todo: implement update routine controller
-  Future<void> updateRoutine(Routine routine) async {}
+  Future<void> updateRoutine(
+      Routine routine, Exercise updatedExercise, bool isUpdateExercise) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final updatedRoutine = await ref
+          .read(routineServiceProvider)
+          .addExercise(routine, updatedExercise, isUpdateExercise);
+      if (updatedRoutine != null) {
+        await ref
+            .read(activeRoutineControllerProvider.notifier)
+            .refreshActiveRoutine();
+      }
+      return fetchRoutines();
+    });
+  }
+
+  Future<void> updateRoutineTitle(Routine routine) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final updatedRoutine =
+          await ref.read(routineServiceProvider).createRoutine(routine);
+      if (updatedRoutine != null) {
+        await ref
+            .read(activeRoutineControllerProvider.notifier)
+            .refreshActiveRoutine();
+      }
+      return fetchRoutines();
+    });
+  }
+
+  Future<void> removeExercise(Exercise exercise) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final updatedRoutine =
+          await ref.read(routineServiceProvider).removeExercise(exercise);
+      if (updatedRoutine != null) {
+        await ref
+            .read(activeRoutineControllerProvider.notifier)
+            .refreshActiveRoutine();
+      }
+      return fetchRoutines();
+    });
+  }
 
   Future<void> deleteRoutine(String routineId) async {
     state = const AsyncValue.loading();

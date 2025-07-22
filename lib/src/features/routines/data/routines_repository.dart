@@ -13,34 +13,41 @@ class RoutinesRepository {
   Ref ref;
 
   final routinesEndpoint = '/api/routines/';
+  final userRoutinesEndpoint = '/api/routines/me';
+  final publicRoutinesEndpoint = '/api/routines/explore';
 
   final _cachedRoutines = InMemoryStore<List<Routine>>([]);
 
   Future<List<Routine?>> getRoutines() async {
     try {
       final client = ref.read(dioProvider);
-      final response = await client.get('${routinesEndpoint}me');
+      final response = await client.get(userRoutinesEndpoint);
       final fetchedData = response.data as List;
-      List<Routine>? routines = List<Routine>.from(
-          fetchedData.map((routine) => Routine.fromJson(routine)));
+      List<Routine>? routines = List<Routine>.from(fetchedData.map((routine) {
+        return Routine.fromJson(routine);
+      }));
       return Future.value(routines);
+    } on DioException catch (e) {
+      throw Exception('${e.message}');
     } catch (e) {
       log(e.toString());
-      throw Exception(e.toString());
+      throw Exception('Something went wrong. Please try again.');
     }
   }
 
   Future<List<Routine?>> getPublicRoutines() async {
     try {
       final client = ref.read(dioProvider);
-      final response = await client.get(routinesEndpoint);
+      final response = await client.get(publicRoutinesEndpoint);
       final fetchedData = response.data as List;
       List<Routine>? routines = List<Routine>.from(
           fetchedData.map((routine) => Routine.fromJson(routine)));
       return Future.value(routines);
+    } on DioException catch (e) {
+      throw Exception('${e.message}');
     } catch (e) {
       log(e.toString());
-      throw Exception(e.toString());
+      throw Exception('Something went wrong. Please try again.');
     }
   }
 
@@ -54,12 +61,20 @@ class RoutinesRepository {
   }
 
   Future<Routine?> getRoutineById(String routineId) async {
-    final client = ref.read(dioProvider);
-    final response = await client.get(routinesEndpoint + routineId);
-    final routine = Routine.fromJson(response.data);
-
-    return Future.value(routine);
-    // return _getRoutine(_cachedRoutines.value, routineId);
+    try {
+      final client = ref.read(dioProvider);
+      final response = await client.get(userRoutinesEndpoint,
+          queryParameters: {"routine_uid": routineId});
+      final jsonResponseRoutine = response.data[0];
+      final routine = Routine.fromJson(jsonResponseRoutine);
+      return Future.value(routine);
+    } on DioException catch (e) {
+      throw Exception('${e.message}');
+    } catch (e, st) {
+      log(e.toString());
+      log(st.toString());
+      throw Exception('Something went wrong. Please try again.');
+    }
   }
 
   static Routine? _getRoutine(List<Routine> routines, String routineId) {
@@ -70,12 +85,20 @@ class RoutinesRepository {
     }
   }
 
-  void _updateRoutineById(Routine routine) async {
-    // todo: integrate update a routine
-    final client = ref.read(dioProvider);
-    final response = await client.put('$routinesEndpoint${routine.id}');
-    log('update this routine ${routine.id}');
-    log('[update response] ${response.data}');
+  Future<Routine?> _updateRoutineById(Routine routine) async {
+    try {
+      final client = ref.read(dioProvider);
+      final response = await client.put('$routinesEndpoint${routine.id}',
+          data: routine.toJson());
+      log('[update response] ${response.data}');
+      return Future.value(routine);
+    } on DioException catch (e) {
+      throw Exception('${e.message}');
+    } catch (e, st) {
+      log(e.toString());
+      log(st.toString());
+      throw Exception('Something went wrong. Please try again.');
+    }
   }
 
   Future<Routine?> addRoutine(Routine routine) async {
@@ -83,14 +106,14 @@ class RoutinesRepository {
       if (routine.id == null) {
         final client = ref.read(dioProvider);
         final response =
-            await client.post('/api/routines/', data: routine.toJson());
-        log('Add Response');
-        log('!!! ${response.data.toString()}');
+            await client.post(routinesEndpoint, data: routine.toJson());
         return Routine.fromJson(response.data);
       } else {
-        _updateRoutineById(routine);
-        return null;
+        final updatedRoutine = _updateRoutineById(routine);
+        return updatedRoutine;
       }
+    } on DioException catch (e) {
+      throw Exception('${e.message}');
     } catch (e, st) {
       log(e.toString());
       log(st.toString());
@@ -139,6 +162,5 @@ final routinesPublicListFutureProvider =
 final routineProvider =
     FutureProvider.autoDispose.family<Routine?, String>((ref, id) {
   final routinesRepository = ref.watch(routinesRepositoryProvider);
-  // return routinesRepository.watchRoutine(id);
   return routinesRepository.getRoutineById(id);
 });

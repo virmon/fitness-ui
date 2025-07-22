@@ -1,6 +1,3 @@
-// import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
-import 'dart:developer';
-
 import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/mutable_routine.dart';
@@ -32,7 +29,6 @@ class RoutineService {
   }
 
   void setSelectedRoutine(Routine routine) {
-    // log(routine.title.toString());
     _currentRoutine.value = routine;
   }
 
@@ -40,9 +36,8 @@ class RoutineService {
     _currentRoutine.value = null;
   }
 
-  void createRoutine(Routine routine) {
-    // ref.read(routinesRepositoryProvider).setRoutine(routine);
-    ref.read(routinesRepositoryProvider).addRoutine(routine);
+  Future<Routine?> createRoutine(Routine routine) {
+    return ref.read(routinesRepositoryProvider).addRoutine(routine);
   }
 
   Future<Routine?> fetchCurrentRoutine() async {
@@ -55,7 +50,7 @@ class RoutineService {
     return routine;
   }
 
-  Future<void> addExercise(
+  Future<Routine?> addExercise(
       Routine routine, Exercise exercise, bool isUpdate) async {
     try {
       Routine updatedRoutine;
@@ -64,21 +59,25 @@ class RoutineService {
       } else {
         updatedRoutine = routine.addExercise(exercise);
       }
-      createRoutine(updatedRoutine);
+      return createRoutine(updatedRoutine);
     } catch (e) {
       FlutterError.onError!(FlutterErrorDetails(exception: e));
+      return null;
     }
   }
 
-  Future<void> removeExercise(Exercise exercise) async {
+  Future<Routine?> removeExercise(Exercise exercise) async {
     try {
-      // String? routineId = getSelectedRoutineId();
-      // final routine =
-      //     ref.read(routinesRepositoryProvider).getRoutineById(routineId!);
-      // Routine updatedRoutine = routine.removeExerciseById(exercise.id);
-      // createRoutine(updatedRoutine);
+      final routine = getSelectedRoutine();
+      Routine updatedRoutine;
+      if (routine != null) {
+        updatedRoutine = routine.removeExerciseById(exercise.id);
+        return createRoutine(updatedRoutine);
+      }
+      return null;
     } catch (e) {
       FlutterError.onError!(FlutterErrorDetails(exception: e));
+      return null;
     }
   }
 }

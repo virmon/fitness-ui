@@ -1,9 +1,9 @@
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
-import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +39,7 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
 
     if (widget.exercise.exerciseSets != null) {
       setState(() {
-        _exerciseSet = widget.exercise.exerciseSets!;
+        _exerciseSet = widget.exercise.sets!;
       });
     }
 
@@ -66,15 +66,12 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
 
   void _addExerciseSet() {
     final exerciseSetCount = _exerciseSet.length + 1;
-    final weightUnit = 'LBS';
 
     final newExerciseSet = ExerciseSet(
       setNo: exerciseSetCount.toString(),
-      repLower: int.parse(_lowerRep),
-      repUpper: int.parse(_upperRep),
       weight: int.parse(_weight),
-      weightUnit: weightUnit,
-      restDuration: 2000,
+      reps: [int.parse(_lowerRep)],
+      rpe: int.parse(_upperRep),
     );
     setState(() {
       _exerciseSet = [..._exerciseSet, newExerciseSet];
@@ -91,18 +88,20 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
     });
   }
 
-  void _updateSets(AsyncValue routine) {
+  void _updateSets(Routine? routine) {
     List<ExerciseSet> undoList = [..._exerciseSet];
     setState(() {
       final updatedExercise = Exercise(
         id: widget.exercise.id,
         title: widget.exercise.title,
         type: widget.exercise.type,
-        exerciseSets: undoList,
+        sets: undoList,
       );
-      routine.whenData((selectedRoutine) => ref
-          .read(routineServiceProvider)
-          .addExercise(selectedRoutine!, updatedExercise, widget.isUpdate));
+      if (routine != null) {
+        ref
+            .read(routinesControllerProvider.notifier)
+            .updateRoutine(routine, updatedExercise, widget.isUpdate);
+      }
     });
   }
 
@@ -121,20 +120,25 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
     }
   }
 
-  void _saveToRoutine(AsyncValue<Routine?> routine) {
+  void _saveToRoutine(Routine? routine) {
     String message = widget.isUpdate
         ? '${widget.exercise.title} Updated'
         : '${widget.exercise.title} Added';
+
     final updatedExercise = Exercise(
       id: widget.exercise.id,
       title: widget.exercise.title,
+      notes: widget.exercise.notes,
+      restTimeSecs: widget.exercise.restTimeSecs,
+      sets: _exerciseSet,
       type: widget.exercise.type,
-      exerciseSets: _exerciseSet,
     );
 
-    routine.whenData((selectedRoutine) => ref
-        .read(routineServiceProvider)
-        .addExercise(selectedRoutine!, updatedExercise, widget.isUpdate));
+    if (routine != null) {
+      ref
+          .read(routinesControllerProvider.notifier)
+          .updateRoutine(routine, updatedExercise, widget.isUpdate);
+    }
     context.pop();
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
@@ -142,9 +146,7 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
 
   @override
   Widget build(BuildContext context) {
-    final routineId = ref.read(routineServiceProvider).getSelectedRoutineId();
-    final routine = ref.watch(routineProvider(routineId ?? '0'));
-
+    final routine = ref.read(routineServiceProvider).getSelectedRoutine();
     String saveButtonText =
         widget.isUpdate ? 'Apply changes' : 'Add to routine';
 

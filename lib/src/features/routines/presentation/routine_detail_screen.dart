@@ -5,7 +5,6 @@ import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
-import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/routine_add_form.dart';
@@ -68,19 +67,8 @@ class RoutineDetailScreen extends StatelessWidget {
             ref.watch(routineServiceProvider).getSelectedRoutineId();
 
         AsyncValue routineValue = AsyncData([]);
-        log('[routinerId] ${routineId.toString()}');
-        log('[routineTitle] ${routineTitle.toString()}');
-        if (routineId == null) {
-          log('Routine ID is null');
-          log('fetching newly created routine');
-          routineValue = ref.watch(activeRoutineControllerProvider);
-          log('[routineValue] ${routineValue.valueOrNull}');
-          // context.goNamed(AppRoute.workouts.name);
-        } else {
-          log('fetching existing selected routine');
-          routineValue = AsyncValue.loading();
-          routineValue = ref.watch(routineProvider(routineId));
-        }
+        routineValue = AsyncValue.loading();
+        routineValue = ref.watch(activeRoutineControllerProvider);
 
         return Scaffold(
             appBar: AppBar(
@@ -109,10 +97,6 @@ class RoutineDetailScreen extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 20.0),
-                                      child: TitleHeader(routine?.id ?? '')),
                                   Padding(
                                       padding:
                                           const EdgeInsets.only(left: 20.0),
@@ -219,7 +203,9 @@ class ExerciseItem extends StatelessWidget {
       MenuItem(
         ExerciseMenu.remove,
         Icons.remove_circle_outline,
-        () => ref.read(routineServiceProvider).removeExercise(exercise),
+        () => ref
+            .read(routinesControllerProvider.notifier)
+            .removeExercise(exercise),
       ),
     ];
 
@@ -253,8 +239,7 @@ class ExerciseItem extends StatelessWidget {
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text(
-                                '${exercise.value?.exerciseSets?.length ?? 0} sets'),
+                            Text('${exercise.value?.sets?.length ?? 0} sets'),
                           ],
                         ),
                         trailing: IconButton(

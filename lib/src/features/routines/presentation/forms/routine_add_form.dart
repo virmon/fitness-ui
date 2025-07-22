@@ -1,10 +1,7 @@
-import 'dart:developer';
-
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
-import 'package:fitness_ui/src/features/routines/presentation/routine_controller.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
@@ -69,24 +66,29 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
     context.goNamed(AppRoute.workoutPlan.name);
   }
 
-  void _editRoutineTitile() {
-    // final currentRoutine = ref.read(routineServiceProvider).getCurrentRoutine();
+  void _editRoutineTitle() {
+    final currentRoutine =
+        ref.read(routineServiceProvider).getSelectedRoutine();
 
-    // Routine updatedRoutine = Routine(
-    //   id: currentRoutine.id,
-    //   title: _newRoutineTitle,
-    //   notes: currentRoutine.notes,
-    //   exercises: currentRoutine.exercises,
-    //   isPrivate: currentRoutine.isPrivate,
-    // );
-
-    // ref.read(routineServiceProvider).createRoutine(updatedRoutine);
+    Routine? updatedRoutine;
+    if (currentRoutine != null) {
+      updatedRoutine = Routine(
+        id: currentRoutine.id,
+        title: _newRoutineTitle,
+        notes: currentRoutine.notes,
+        exercises: currentRoutine.exercises,
+        isPrivate: currentRoutine.isPrivate,
+      );
+      ref
+          .read(routinesControllerProvider.notifier)
+          .updateRoutineTitle(updatedRoutine);
+    }
     context.pop();
   }
 
   void _saveRoutineTitle() {
     if (widget.isUpdateForm && addRoutineFormController.text.isNotEmpty) {
-      _editRoutineTitile();
+      _editRoutineTitle();
     } else {
       if (addRoutineFormController.text.isNotEmpty) {
         _createRoutineTitle();

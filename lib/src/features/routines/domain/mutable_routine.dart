@@ -31,8 +31,10 @@ extension MutableRoutine on Routine {
     final updatedExercise = Exercise(
       id: currentExercise.id,
       title: currentExercise.title,
+      notes: currentExercise.notes,
+      restTimeSecs: currentExercise.restTimeSecs,
+      sets: newExercise.sets,
       type: currentExercise.type,
-      exerciseSets: newExercise.exerciseSets,
     );
 
     routineCopy.exercises

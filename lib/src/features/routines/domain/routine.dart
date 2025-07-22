@@ -14,6 +14,8 @@ class Routine {
   final String? notes;
   final List<Exercise> exercises;
   final bool isPrivate;
+  final String? createdAt;
+  final String? updatedAt;
 
   const Routine({
     this.id,
@@ -21,6 +23,8 @@ class Routine {
     this.notes,
     this.exercises = const [],
     this.isPrivate = true,
+    this.createdAt = '',
+    this.updatedAt = '',
   });
 
   factory Routine.fromJson(Map<String, dynamic> json) {
@@ -31,6 +35,8 @@ class Routine {
       exercises: List<Exercise>.from(
           json["exercises"].map((exercise) => Exercise.fromJson(exercise))),
       isPrivate: json["is_private"],
+      createdAt: json["created_at"],
+      updatedAt: json["updated_at"],
     );
   }
 

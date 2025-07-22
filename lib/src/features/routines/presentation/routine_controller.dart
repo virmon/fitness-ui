@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
@@ -11,11 +10,15 @@ class RoutineController extends AutoDisposeAsyncNotifier<Routine?> {
     return ref.read(routineServiceProvider).fetchCurrentRoutine();
   }
 
-  Future<void> getSingleRoutine() async {
+  Future<void> refreshActiveRoutine() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      // ref.read(routineServiceProvider).setSelectedRoutineId(routineId);
-      return await ref.read(routineServiceProvider).fetchCurrentRoutine();
+      final updatedRoutine =
+          await ref.read(routineServiceProvider).fetchCurrentRoutine();
+      if (updatedRoutine != null) {
+        ref.read(routineServiceProvider).setSelectedRoutine(updatedRoutine);
+      }
+      return updatedRoutine;
     });
   }
 }
