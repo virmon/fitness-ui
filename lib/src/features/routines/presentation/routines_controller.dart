@@ -23,6 +23,13 @@ class RoutinesController
     return fetchRoutines();
   }
 
+  Future<void> refreshRoutines() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      return fetchRoutines();
+    });
+  }
+
   Future<bool> addRoutine(Routine routine) async {
     bool retVal = false;
     state = const AsyncValue.loading();

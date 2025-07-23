@@ -20,20 +20,25 @@ class RoutinesList extends ConsumerWidget {
         ? ref.watch(routinesControllerPublicListProvider(showPublicRoutines))
         : ref.watch(routinesControllerProvider);
 
-    return ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Column(
-            children: [
-              ListSection(
-                title: title,
-                content: asyncRoutines,
-              ),
-            ],
-          ),
-        )
-      ],
+    return RefreshIndicator(
+      onRefresh: () async {
+        await ref.read(routinesControllerProvider.notifier).refreshRoutines();
+      },
+      child: ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Column(
+              children: [
+                ListSection(
+                  title: title,
+                  content: asyncRoutines,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
