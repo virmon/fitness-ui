@@ -1,4 +1,4 @@
-import 'package:fitness_ui/src/features/routines/presentation/routine_controller.dart';
+import 'package:fitness_ui/src/features/routines/presentation/search/search_controller.dart';
 import 'package:fitness_ui/src/features/routines/presentation/search/search_query_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,7 +49,7 @@ class _SearchBarState extends ConsumerState<ConsumerStatefulWidget> {
     final double searchBarContentPadding = 10.0;
 
     ref.listen(
-        routineControllerProvider,
+        searchControllerProvider,
         (_, state) => state.whenOrNull(
               error: (error, stackTrace) {
                 ScaffoldMessenger.of(context).showSnackBar(

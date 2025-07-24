@@ -29,7 +29,7 @@ class ExerciseSet {
   Map<String, dynamic> toJson() => {
         "set_no": int.parse(setNo),
         "weight": weight,
-        "reps:": reps,
+        "reps": reps,
         "rpe": rpe,
       };
 }

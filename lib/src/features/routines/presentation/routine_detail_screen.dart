@@ -5,11 +5,11 @@ import 'package:fitness_ui/src/common/async_value_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
-import 'package:fitness_ui/src/features/routines/data/routines_repository.dart';
-// import 'package:fitness_ui/src/features/routines/data/fake_routines_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/exercise_add_set_form.dart';
 import 'package:fitness_ui/src/features/routines/presentation/forms/routine_add_form.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routine_controller.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,11 +37,10 @@ class RoutineDetailScreen extends StatelessWidget {
         RoutineMenu.remove,
         Icons.remove_circle_outline,
         () {
-          // ref.read(routinesRepositoryProvider).removeRoutine(routineId);
           log('deleting $routineId');
           ref
-              .read(routinesRepositoryProvider)
-              .deleteRoutineById(routineId: routineId);
+              .read(routinesControllerProvider.notifier)
+              .deleteRoutine(routineId);
           context.pop();
           ScaffoldMessenger.of(context)
             ..removeCurrentSnackBar()
@@ -68,17 +67,15 @@ class RoutineDetailScreen extends StatelessWidget {
             ref.watch(routineServiceProvider).getSelectedRoutineId();
 
         AsyncValue routineValue = AsyncData([]);
-        if (routineId == null) {
-          context.goNamed(AppRoute.workouts.name);
-        } else {
-          routineValue = ref.watch(routineProvider(routineId));
-        }
+        routineValue = AsyncValue.loading();
+        routineValue = ref.watch(activeRoutineControllerProvider);
 
         return Scaffold(
             appBar: AppBar(
               actions: [
                 IconButton(
-                  onPressed: () => _showRoutineMenu(context, ref, routineId!),
+                  onPressed: () =>
+                      _showRoutineMenu(context, ref, routineId ?? ''),
                   icon: Icon(Icons.more_horiz_rounded),
                 ),
               ],
@@ -206,7 +203,9 @@ class ExerciseItem extends StatelessWidget {
       MenuItem(
         ExerciseMenu.remove,
         Icons.remove_circle_outline,
-        () => ref.read(routineServiceProvider).removeExercise(exercise),
+        () => ref
+            .read(routinesControllerProvider.notifier)
+            .removeExercise(exercise),
       ),
     ];
 
@@ -240,8 +239,7 @@ class ExerciseItem extends StatelessWidget {
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text(
-                                '${exercise.value?.exerciseSets?.length ?? 0} sets'),
+                            Text('${exercise.value?.sets?.length ?? 0} sets'),
                           ],
                         ),
                         trailing: IconButton(

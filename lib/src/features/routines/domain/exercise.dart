@@ -22,7 +22,7 @@ class Exercise {
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) => Exercise(
-        id: json["id"],
+        id: json["exercise_id"],
         title: json["title"],
         restTimeSecs: json["rest_time_secs"],
         notes: json["notes"],
@@ -32,7 +32,7 @@ class Exercise {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "exercise_id": id,
         "title": title,
         "rest_time_secs": restTimeSecs,
         "notes": notes,

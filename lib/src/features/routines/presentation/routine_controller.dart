@@ -1,21 +1,28 @@
-import 'package:fitness_ui/src/features/routines/data/fake_exercises_repository.dart';
-import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
+import 'dart:async';
+
+import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
+import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RoutineController extends AutoDisposeAsyncNotifier<List<Exercise>> {
+class RoutineController extends AutoDisposeAsyncNotifier<Routine?> {
   @override
-  List<Exercise> build() {
-    return [];
+  Future<Routine?> build() {
+    return ref.read(routineServiceProvider).fetchCurrentRoutine();
   }
 
-  void searchExercises(String query) async {
-    state = const AsyncLoading();
-    state = AsyncValue.data(
-        await ref.read(exercisesListSearchProvider(query).future));
+  Future<void> refreshActiveRoutine() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final updatedRoutine =
+          await ref.read(routineServiceProvider).fetchCurrentRoutine();
+      if (updatedRoutine != null) {
+        ref.read(routineServiceProvider).setSelectedRoutine(updatedRoutine);
+      }
+      return updatedRoutine;
+    });
   }
 }
 
-final routineControllerProvider =
-    AsyncNotifierProvider.autoDispose<RoutineController, List<Exercise>>(() {
-  return RoutineController();
-});
+final activeRoutineControllerProvider =
+    AutoDisposeAsyncNotifierProvider<RoutineController, Routine?>(
+        RoutineController.new);
