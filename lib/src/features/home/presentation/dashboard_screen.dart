@@ -34,6 +34,10 @@ class DashboardScreen extends StatelessWidget {
                     ref.watch(authServiceProvider).logout();
                   },
                   child: Text('Logout')),
+              ElevatedButton(
+                onPressed: () => context.go('/pose'),
+                child: const Text("Start Pose Tracking"),
+              )
             ]),
           );
         },
