@@ -14,13 +14,11 @@ class RoutineMenu {
   static const add = 'Add to this routine';
   static const edit = 'Rename this routine';
   static const remove = 'Delete this routine';
+  static const togglePrivate = 'Make private';
+  static const togglePublic = 'Make public';
 }
 
 class ExerciseMenu {
   static const edit = 'Edit Exercise Sets';
   static const remove = 'Remove Exercise';
-}
-
-class Api {
-  static const baseUrl = 'https://fitness-server-8ht3.onrender.com/';
 }

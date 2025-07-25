@@ -1,28 +1,58 @@
 import 'package:fitness_ui/src/common/async_value_widget.dart';
+import 'package:fitness_ui/src/common/global_loading_indicator.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
-import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_list/public_routines_controller.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_list/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
+import 'package:fitness_ui/src/utils/routines_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class RoutinesList extends ConsumerWidget {
-  const RoutinesList(
-      {super.key, required this.title, this.showPublicRoutines = false});
+class RoutinesList extends ConsumerStatefulWidget {
+  const RoutinesList({
+    super.key,
+    required this.title,
+    this.showPublicRoutines = false,
+  });
   final String title;
   final bool showPublicRoutines;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asyncRoutines = showPublicRoutines
-        ? ref.watch(routinesControllerPublicListProvider(showPublicRoutines))
+  ConsumerState<ConsumerStatefulWidget> createState() => _RoutinesListState();
+}
+
+class _RoutinesListState extends ConsumerState<RoutinesList> {
+  bool _isPublicRoutine = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {
+      _isPublicRoutine = widget.showPublicRoutines;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final asyncRoutines = _isPublicRoutine
+        ? ref.watch(publicRoutinesControllerProvider)
         : ref.watch(routinesControllerProvider);
 
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(routinesControllerProvider.notifier).refreshRoutines();
+        HapticFeedback.heavyImpact();
+        _isPublicRoutine
+            ? await ref
+                .read(publicRoutinesControllerProvider.notifier)
+                .refreshRoutines()
+            : await ref
+                .read(routinesControllerProvider.notifier)
+                .refreshRoutines();
       },
       child: ListView(
         children: [
@@ -31,8 +61,9 @@ class RoutinesList extends ConsumerWidget {
             child: Column(
               children: [
                 ListSection(
-                  title: title,
+                  title: widget.title,
                   content: asyncRoutines,
+                  showPublicRoutines: widget.showPublicRoutines,
                 ),
               ],
             ),
@@ -44,9 +75,14 @@ class RoutinesList extends ConsumerWidget {
 }
 
 class ListSection extends StatelessWidget {
-  const ListSection({super.key, required this.title, required this.content});
+  const ListSection(
+      {super.key,
+      required this.title,
+      required this.content,
+      required this.showPublicRoutines});
   final String title;
   final AsyncValue content;
+  final bool showPublicRoutines;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +96,8 @@ class ListSection extends StatelessWidget {
               TitleHeader(title),
               AsyncValueWidget(
                 value: content,
-                data: (data) => ListSectionItem(items: data),
+                data: (data) => ListSectionItem(
+                    items: data, showPublicRoutines: showPublicRoutines),
               ),
             ],
           ),
@@ -71,8 +108,10 @@ class ListSection extends StatelessWidget {
 }
 
 class ListSectionItem extends StatelessWidget {
-  const ListSectionItem({super.key, required this.items});
+  const ListSectionItem(
+      {super.key, required this.items, required this.showPublicRoutines});
   final List<Routine?> items;
+  final bool showPublicRoutines;
 
   @override
   Widget build(BuildContext context) {
@@ -99,18 +138,20 @@ class ListSectionItem extends StatelessWidget {
                               ),
                             ),
                             title: TextHeader(routine!.title),
-                            subtitle: Text(
-                                '${routine.exercises.length.toString()} workouts'),
+                            subtitle: Text('exercise'
+                                .formatNounCount(routine.exercises.length)),
                             onTap: () {
                               final routineId = routine.id;
                               if (routineId != null) {
                                 ref
                                     .read(routineServiceProvider)
-                                    .setSelectedRoutineId(routineId);
-                                ref
-                                    .read(routineServiceProvider)
-                                    .setSelectedRoutine(routine);
-                                context.goNamed(AppRoute.workoutPlan.name);
+                                    .setActiveRoutine(routine);
+                                context.goNamed(AppRoute.routineDetail.name,
+                                    queryParameters: {
+                                      'showPublicRoutines':
+                                          showPublicRoutines.toString()
+                                    });
+                                ref.read(loadingProvider.notifier).state = true;
                               }
                             },
                           ),
