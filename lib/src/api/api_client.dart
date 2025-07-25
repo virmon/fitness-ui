@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:fitness_ui/src/api/api_constants.dart';
 import 'package:fitness_ui/src/api/authentication_interceptor.dart';
-import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ApiClient {

@@ -1,7 +1,7 @@
 import 'package:fitness_ui/src/features/authentication/auth_gate.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
-import 'package:fitness_ui/src/features/routines/presentation/routine_detail_screen.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routine_details/routine_detail_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_list_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/search/app_search_screen.dart';
 import 'package:fitness_ui/src/routing/go_router_refresh_stream.dart';
@@ -25,8 +25,8 @@ final _shellNavigatorProfileKey = GlobalKey<NavigatorState>(
 enum AppRoute {
   signIn,
   home,
-  workouts,
-  workoutPlan,
+  routines,
+  routineDetail,
   newRoutine,
   profile,
   search,
@@ -47,7 +47,7 @@ final goRouterProvider = Provider((ref) {
         }
       } else {
         if (path.startsWith('/') ||
-            path.startsWith('/workouts') ||
+            path.startsWith('/routines') ||
             path.startsWith('/profile')) {
           return '/signIn';
         }
@@ -83,18 +83,27 @@ final goRouterProvider = Provider((ref) {
             navigatorKey: _shellNavigatorWorkoutsKey,
             routes: [
               GoRoute(
-                  path: '/workouts',
-                  name: AppRoute.workouts.name,
+                  path: '/routines',
+                  name: AppRoute.routines.name,
                   pageBuilder: (context, state) => const NoTransitionPage(
                         child: RoutinesListScreen(),
                       ),
                   routes: [
                     GoRoute(
                       path: '/detail',
-                      name: AppRoute.workoutPlan.name,
+                      name: AppRoute.routineDetail.name,
                       builder: (context, state) {
                         final routineTitle = state.uri.queryParameters['title'];
-                        return RoutineDetailScreen(routineTitle: routineTitle);
+                        final showPublicRoutines =
+                            state.uri.queryParameters['showPublicRoutines'];
+                        if (showPublicRoutines != null) {
+                          return RoutineDetailScreen(
+                              newRoutineTitle: routineTitle,
+                              showPublicRoutines:
+                                  bool.parse(showPublicRoutines));
+                        }
+                        return RoutineDetailScreen(
+                            newRoutineTitle: routineTitle);
                       },
                     ),
                   ]),

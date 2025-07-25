@@ -3,7 +3,7 @@ import 'package:fitness_ui/src/features/routines/application/routine_service.dar
 import 'package:fitness_ui/src/features/routines/domain/exercise.dart';
 import 'package:fitness_ui/src/features/routines/domain/exercise_set.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
-import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_list/routines_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -146,7 +146,7 @@ class _State extends ConsumerState<ExerciseAddSetForm> {
 
   @override
   Widget build(BuildContext context) {
-    final routine = ref.read(routineServiceProvider).getSelectedRoutine();
+    final routine = ref.read(routineServiceProvider).getActiveRoutine();
     String saveButtonText =
         widget.isUpdate ? 'Apply changes' : 'Add to routine';
 

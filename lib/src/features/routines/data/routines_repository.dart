@@ -3,25 +3,21 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:fitness_ui/src/api/api_client.dart';
+import 'package:fitness_ui/src/api/api_constants.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
-import 'package:fitness_ui/src/utils/in_memory_store.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoutinesRepository {
   RoutinesRepository(this.ref);
   Ref ref;
 
-  final routinesEndpoint = '/api/routines/';
-  final userRoutinesEndpoint = '/api/routines/me';
-  final publicRoutinesEndpoint = '/api/routines/explore';
-
-  final _cachedRoutines = InMemoryStore<List<Routine>>([]);
+  final errorRepositoryMessage = 'Something went wrong. Please try again.';
 
   Future<List<Routine?>> getRoutines() async {
     try {
       final client = ref.read(dioProvider);
-      final response = await client.get(userRoutinesEndpoint);
+      final response = await client.get(ApiEndpoints.userRoutines);
       final fetchedData = response.data as List;
       List<Routine>? routines = List<Routine>.from(fetchedData.map((routine) {
         return Routine.fromJson(routine);
@@ -31,14 +27,14 @@ class RoutinesRepository {
       throw Exception('${e.message}');
     } catch (e) {
       log(e.toString());
-      throw Exception('Something went wrong. Please try again.');
+      throw Exception(errorRepositoryMessage);
     }
   }
 
   Future<List<Routine?>> getPublicRoutines() async {
     try {
       final client = ref.read(dioProvider);
-      final response = await client.get(publicRoutinesEndpoint);
+      final response = await client.get(ApiEndpoints.publicRoutines);
       final fetchedData = response.data as List;
       List<Routine>? routines = List<Routine>.from(
           fetchedData.map((routine) => Routine.fromJson(routine)));
@@ -47,23 +43,14 @@ class RoutinesRepository {
       throw Exception('${e.message}');
     } catch (e) {
       log(e.toString());
-      throw Exception('Something went wrong. Please try again.');
+      throw Exception(errorRepositoryMessage);
     }
-  }
-
-  Stream<List<Routine>> watchRoutinesList() {
-    return _cachedRoutines.stream;
-  }
-
-  Stream<Routine?> watchRoutine(String routineId) {
-    return watchRoutinesList()
-        .map((routines) => _getRoutine(routines, routineId));
   }
 
   Future<Routine?> getRoutineById(String routineId) async {
     try {
       final client = ref.read(dioProvider);
-      final response = await client.get(userRoutinesEndpoint,
+      final response = await client.get(ApiEndpoints.userRoutines,
           queryParameters: {"routine_uid": routineId});
       final jsonResponseRoutine = response.data[0];
       final routine = Routine.fromJson(jsonResponseRoutine);
@@ -73,22 +60,31 @@ class RoutinesRepository {
     } catch (e, st) {
       log(e.toString());
       log(st.toString());
-      throw Exception('Something went wrong. Please try again.');
+      throw Exception(errorRepositoryMessage);
     }
   }
 
-  static Routine? _getRoutine(List<Routine> routines, String routineId) {
+  Future<Routine?> getPublicRoutineById(String routineId) async {
     try {
-      return routines.firstWhere((routine) => routine.id == routineId);
-    } catch (e) {
-      return null;
+      final client = ref.read(dioProvider);
+      final response = await client.get(ApiEndpoints.publicRoutines,
+          queryParameters: {"routine_uid": routineId});
+      final jsonResponseRoutine = response.data[0];
+      final routine = Routine.fromJson(jsonResponseRoutine);
+      return Future.value(routine);
+    } on DioException catch (e) {
+      throw Exception('${e.message}');
+    } catch (e, st) {
+      log(e.toString());
+      log(st.toString());
+      throw Exception(errorRepositoryMessage);
     }
   }
 
   Future<Routine?> _updateRoutineById(Routine routine) async {
     try {
       final client = ref.read(dioProvider);
-      final response = await client.put('$routinesEndpoint${routine.id}',
+      final response = await client.put('${ApiEndpoints.routines}${routine.id}',
           data: routine.toJson());
       log('[update response] ${response.data}');
       return Future.value(routine);
@@ -97,7 +93,7 @@ class RoutinesRepository {
     } catch (e, st) {
       log(e.toString());
       log(st.toString());
-      throw Exception('Something went wrong. Please try again.');
+      throw Exception(errorRepositoryMessage);
     }
   }
 
@@ -106,7 +102,7 @@ class RoutinesRepository {
       if (routine.id == null) {
         final client = ref.read(dioProvider);
         final response =
-            await client.post(routinesEndpoint, data: routine.toJson());
+            await client.post(ApiEndpoints.routines, data: routine.toJson());
         return Routine.fromJson(response.data);
       } else {
         final updatedRoutine = _updateRoutineById(routine);
@@ -117,20 +113,21 @@ class RoutinesRepository {
     } catch (e, st) {
       log(e.toString());
       log(st.toString());
-      throw Exception('Something went wrong. Please try again.');
+      throw Exception(errorRepositoryMessage);
     }
   }
 
   Future<bool> deleteRoutineById({required String routineId}) async {
     try {
       final client = ref.read(dioProvider);
-      final response = await client.delete('$routinesEndpoint$routineId');
+      final response =
+          await client.delete('${ApiEndpoints.routines}$routineId');
       log(response.data.toString());
       return true;
     } on DioException catch (e) {
       throw Exception('${e.message}');
     } catch (e) {
-      throw Exception('Could not delete the routine. Please try again.');
+      throw Exception(errorRepositoryMessage);
     }
   }
 }
@@ -163,4 +160,10 @@ final routineProvider =
     FutureProvider.autoDispose.family<Routine?, String>((ref, id) {
   final routinesRepository = ref.watch(routinesRepositoryProvider);
   return routinesRepository.getRoutineById(id);
+});
+
+final publicRoutineProvider =
+    FutureProvider.autoDispose.family<Routine?, String>((ref, id) {
+  final routinesRepository = ref.watch(routinesRepositoryProvider);
+  return routinesRepository.getPublicRoutineById(id);
 });

@@ -1,8 +1,9 @@
+import 'package:fitness_ui/src/common/global_loading_indicator.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
 import 'package:fitness_ui/src/features/routines/domain/routine.dart';
-import 'package:fitness_ui/src/features/routines/presentation/routines_controller.dart';
+import 'package:fitness_ui/src/features/routines/presentation/routines_list/routines_controller.dart';
 import 'package:fitness_ui/src/routing/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +31,7 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
     super.initState();
 
     if (widget.isUpdateForm) {
-      final routine = ref.read(routineServiceProvider).getSelectedRoutine();
+      final routine = ref.read(routineServiceProvider).getActiveRoutine();
       addRoutineFormController.text = routine?.title ?? '';
     }
     addRoutineFormController.addListener(_printLatestValue);
@@ -50,25 +51,24 @@ class _RoutineAddFormState extends ConsumerState<RoutineAddForm> {
   }
 
   void _createRoutineTitle() async {
-    ref.watch(routineServiceProvider).clearSelectedRoutineId();
-    ref.watch(routineServiceProvider).clearSelectedRoutine();
+    ref.watch(routineServiceProvider).clearActiveRoutine();
     final hasCreatedNewRoutine = await ref
         .read(routinesControllerProvider.notifier)
         .addRoutine(Routine(title: _newRoutineTitle));
 
-    if (hasCreatedNewRoutine) {
+    if (context.mounted && hasCreatedNewRoutine) {
       _navigateRoutineDetailScreen();
+      ref.read(loadingProvider.notifier).state = false;
     }
   }
 
   void _navigateRoutineDetailScreen() {
     context.pop();
-    context.goNamed(AppRoute.workoutPlan.name);
+    context.goNamed(AppRoute.routineDetail.name);
   }
 
   void _editRoutineTitle() {
-    final currentRoutine =
-        ref.read(routineServiceProvider).getSelectedRoutine();
+    final currentRoutine = ref.read(routineServiceProvider).getActiveRoutine();
 
     Routine? updatedRoutine;
     if (currentRoutine != null) {
