@@ -39,6 +39,7 @@ class RoutinesController extends AutoDisposeAsyncNotifier<List<Routine?>> {
       log(newRoutine!.id.toString());
       if (newRoutine.id != null) {
         isCreateSuccess = true;
+        ref.read(loadingProvider.notifier).state = false;
       }
       ref.read(routineServiceProvider).setActiveRoutine(newRoutine);
       return fetchRoutines();
