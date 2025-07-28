@@ -9,30 +9,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RoutineService {
   RoutineService(this.ref);
   final Ref ref;
-  final _currentRoutineId = InMemoryStore<String?>(null);
   final _currentRoutine = InMemoryStore<Routine?>(null);
 
-  String? getSelectedRoutineId() {
-    return _currentRoutineId.value;
+  String? getActiveRoutineId() {
+    if (_currentRoutine.value?.id != null) {
+      return _currentRoutine.value?.id;
+    }
+    return null;
   }
 
-  void setSelectedRoutineId(String routineId) {
-    _currentRoutineId.value = routineId;
-  }
-
-  void clearSelectedRoutineId() {
-    _currentRoutineId.value = null;
-  }
-
-  Routine? getSelectedRoutine() {
+  Routine? getActiveRoutine() {
     return _currentRoutine.value;
   }
 
-  void setSelectedRoutine(Routine routine) {
+  void setActiveRoutine(Routine routine) {
+    clearActiveRoutine();
     _currentRoutine.value = routine;
   }
 
-  void clearSelectedRoutine() {
+  void clearActiveRoutine() {
     _currentRoutine.value = null;
   }
 
@@ -41,13 +36,33 @@ class RoutineService {
   }
 
   Future<Routine?> fetchCurrentRoutine() async {
-    String? routineId = getSelectedRoutineId();
-    Routine? routine;
-    if (routineId != null) {
-      routine =
-          await ref.read(routinesRepositoryProvider).getRoutineById(routineId);
+    try {
+      String? routineId = getActiveRoutineId();
+      Routine? routine;
+      if (routineId != null) {
+        routine = await ref
+            .read(routinesRepositoryProvider)
+            .getRoutineById(routineId);
+      }
+      return routine;
+    } catch (e) {
+      throw 'The routine you requested is not available.';
     }
-    return routine;
+  }
+
+  Future<Routine?> fetchCurrentPublicRoutine() async {
+    try {
+      String? routineId = getActiveRoutineId();
+      Routine? routine;
+      if (routineId != null) {
+        routine = await ref
+            .read(routinesRepositoryProvider)
+            .getPublicRoutineById(routineId);
+      }
+      return routine;
+    } catch (e) {
+      throw 'The routine you requested is not available.';
+    }
   }
 
   Future<Routine?> addExercise(
@@ -68,7 +83,7 @@ class RoutineService {
 
   Future<Routine?> removeExercise(Exercise exercise) async {
     try {
-      final routine = getSelectedRoutine();
+      final routine = getActiveRoutine();
       Routine updatedRoutine;
       if (routine != null) {
         updatedRoutine = routine.removeExerciseById(exercise.id);
