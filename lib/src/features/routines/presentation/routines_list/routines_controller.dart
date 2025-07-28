@@ -75,6 +75,19 @@ class RoutinesController extends AutoDisposeAsyncNotifier<List<Routine?>> {
     });
   }
 
+  Future<void> toggleRoutinePrivacy(Routine routine) async {
+    await AsyncValue.guard(() async {
+      Routine routineCopy = routine.copyWith(isPrivate: !routine.isPrivate);
+      final updatedRoutine =
+          await ref.read(routineServiceProvider).createRoutine(routineCopy);
+      if (updatedRoutine != null) {
+        await ref
+            .read(activeRoutineControllerProvider.notifier)
+            .refreshActiveRoutine();
+      }
+    });
+  }
+
   Future<void> removeExercise(Exercise exercise) async {
     state = await AsyncValue.guard(() async {
       final updatedRoutine =

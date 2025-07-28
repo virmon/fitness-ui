@@ -1,5 +1,6 @@
 import 'package:fitness_ui/src/common/app_menu_widget.dart';
 import 'package:fitness_ui/src/common/async_value_widget.dart';
+import 'package:fitness_ui/src/common/cover_image_widget.dart';
 import 'package:fitness_ui/src/common/typography.dart';
 import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/routines/application/routine_service.dart';
@@ -93,51 +94,71 @@ class _RoutineDetailScreenState extends ConsumerState<RoutineDetailScreen> {
                       child: SizedBox(
                         width: titleWidth,
                         child: TextHeader(
-                            widget.newRoutineTitle ?? routine?.title ?? ''),
+                            widget.newRoutineTitle ?? routine!.title),
                       ),
                     ),
-                    background: Image.asset(
-                      'assets/image_placeholder.jpg',
-                      fit: BoxFit.fitHeight,
-                    ),
+                    background: CoverImageWidget(
+                        coverImage: 'assets/image_placeholder.jpg'),
                   ),
                   actions: [
-                    IconButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          showDragHandle: true,
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AppMenuWidget(menuItems: [
-                              MenuItem(
-                                RoutineMenu.add,
-                                Icons.add_circle_outline,
-                                () => context.pushNamed(AppRoute.search.name),
-                              ),
-                              MenuItem(RoutineMenu.edit, Icons.edit, () {
-                                showModalBottomSheet(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return RoutineAddForm(isUpdateForm: true);
-                                    });
-                              }),
-                              MenuItem(
-                                RoutineMenu.remove,
-                                Icons.remove_circle_outline,
-                                () async {
-                                  bool isDeleted = await ref
-                                      .read(routinesControllerProvider.notifier)
-                                      .deleteRoutine(routineId!);
-                                  if (mounted && isDeleted) {
-                                    navigateBack();
-                                  }
+                    Visibility(
+                      visible: !_isPublicRoutine,
+                      child: IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            showDragHandle: true,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return StatefulBuilder(
+                                builder: (context, setState) {
+                                  return AppMenuWidget(menuItems: [
+                                    MenuItem(
+                                      RoutineMenu.add,
+                                      Icons.add_circle_outline,
+                                      () => context
+                                          .pushNamed(AppRoute.search.name),
+                                    ),
+                                    MenuItem(
+                                      routine!.isPrivate
+                                          ? RoutineMenu.togglePublic
+                                          : RoutineMenu.togglePrivate,
+                                      routine.isPrivate
+                                          ? Icons.public
+                                          : Icons.lock,
+                                      () => ref
+                                          .read(routinesControllerProvider
+                                              .notifier)
+                                          .toggleRoutinePrivacy(routine),
+                                    ),
+                                    MenuItem(RoutineMenu.edit, Icons.edit, () {
+                                      showModalBottomSheet(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return RoutineAddForm(
+                                                isUpdateForm: true);
+                                          });
+                                    }),
+                                    MenuItem(
+                                      RoutineMenu.remove,
+                                      Icons.remove_circle_outline,
+                                      () async {
+                                        bool isDeleted = await ref
+                                            .read(routinesControllerProvider
+                                                .notifier)
+                                            .deleteRoutine(routineId!);
+                                        if (mounted && isDeleted) {
+                                          navigateBack();
+                                        }
+                                      },
+                                    ),
+                                  ]);
                                 },
-                              ),
-                            ]);
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.more_horiz_rounded),
+                              );
+                            },
+                          );
+                        },
+                        icon: Icon(Icons.more_horiz_rounded),
+                      ),
                     ),
                   ],
                 ),
@@ -150,13 +171,18 @@ class _RoutineDetailScreenState extends ConsumerState<RoutineDetailScreen> {
                           Padding(
                               padding:
                                   const EdgeInsets.only(left: 10.0, top: 10.0),
-                              child: TitleHeader(widget.newRoutineTitle ??
-                                  routine?.title ??
-                                  '')),
+                              child: TitleHeader(
+                                  widget.newRoutineTitle ?? routine!.title)),
                           Padding(
                               padding: const EdgeInsets.only(left: 10.0),
-                              child: Text('exercise'.formatNounCount(
-                                  routine?.exercises.length ?? 0))),
+                              child: Text('exercise'
+                                  .formatNounCount(routine!.exercises.length))),
+                          Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10.0, top: 5.0),
+                              child: routine.isPrivate
+                                  ? Icon(Icons.lock)
+                                  : Icon(Icons.public)),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
@@ -166,9 +192,12 @@ class _RoutineDetailScreenState extends ConsumerState<RoutineDetailScreen> {
                           ),
                           RoutineActionPanel(
                             isPublicRoutine: _isPublicRoutine,
-                            routine: routine!,
+                            routine: routine,
                           ),
-                          ExerciseItem(exercises: routine.exercises)
+                          ExerciseItem(
+                            exercises: routine.exercises,
+                            showOptions: !_isPublicRoutine,
+                          )
                         ],
                       ),
                     ],
