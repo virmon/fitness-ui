@@ -1,6 +1,7 @@
 import 'package:fitness_ui/src/features/authentication/auth_gate.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
+import 'package:fitness_ui/src/features/routines/domain/routine.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routine_detail_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/routines_list_screen.dart';
 import 'package:fitness_ui/src/features/routines/presentation/search/app_search_screen.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fitness_ui/src/features/Home/presentation/app_navigation_bar.dart';
 import 'package:fitness_ui/src/features/Home/presentation/dashboard_screen.dart';
-import 'package:fitness_ui/src/features/stream/presentation/pose_stream_page.dart';
+import 'package:fitness_ui/src/features/stream/presentation/pose_preparation_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorHomeKey = GlobalKey<NavigatorState>(
@@ -66,6 +67,14 @@ final goRouterProvider = Provider((ref) {
           child: AuthGate(),
         ),
       ),
+      GoRoute(
+        name: AppRoute.pose.name,
+        path: '/pose',
+        builder: (context, state) {
+          final routine = state.extra as Routine;
+          return PosePreparationScreen(routine: routine);
+        },
+      ),
       StatefulShellRoute.indexedStack(
         pageBuilder: (context, state, navigationShell) => NoTransitionPage(
             child: AppNavigationBar(navigationShell: navigationShell)),
@@ -79,10 +88,6 @@ final goRouterProvider = Provider((ref) {
                 pageBuilder: (context, state) => const NoTransitionPage(
                   child: DashboardScreen(),
                 ),
-              ),
-              GoRoute(
-                path: '/pose',
-                builder: (context, state) => PoseStreamPage(),
               ),
             ],
           ),

@@ -124,15 +124,22 @@ class RoutineDetailScreen extends StatelessWidget {
                                       child: Column(
                                         children: [
                                           SizedBox(
-                                            width: 450,
-                                            height: 60,
-                                            child: ElevatedButton(
+                                              width: 450,
+                                              height: 60,
+                                              child: ElevatedButton(
                                                 onPressed: () {
-                                                  // todo: implement start workout session
+                                                  final routine = ref
+                                                      .read(
+                                                          activeRoutineControllerProvider)
+                                                      .value;
+                                                  if (routine != null) {
+                                                    context.push('/pose',
+                                                        extra: routine);
+                                                  }
                                                 },
                                                 child: const TextHeader(
-                                                    AppRoutine.start)),
-                                          ),
+                                                    AppRoutine.start),
+                                              )),
                                         ],
                                       ),
                                     ),
