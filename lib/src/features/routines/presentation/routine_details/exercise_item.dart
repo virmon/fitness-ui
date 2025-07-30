@@ -9,8 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ExerciseItem extends StatelessWidget {
-  const ExerciseItem({super.key, required this.exercises});
+  const ExerciseItem({
+    super.key,
+    required this.exercises,
+    required this.showOptions,
+  });
   final List<Exercise?> exercises;
+  final bool showOptions;
 
   void _showEditExerciseSets(BuildContext context, Exercise exercise) {
     showModalBottomSheet(
@@ -78,10 +83,13 @@ class ExerciseItem extends StatelessWidget {
                                 exercise.value?.sets?.length ?? 0)),
                           ],
                         ),
-                        trailing: IconButton(
-                          onPressed: () =>
-                              _showExerciseMenu(context, ref, exercise.value!),
-                          icon: Icon(Icons.more_horiz_outlined),
+                        trailing: Visibility(
+                          visible: showOptions,
+                          child: IconButton(
+                            onPressed: () => _showExerciseMenu(
+                                context, ref, exercise.value!),
+                            icon: Icon(Icons.more_horiz_outlined),
+                          ),
                         ),
                         onTap: () => {}),
                   )

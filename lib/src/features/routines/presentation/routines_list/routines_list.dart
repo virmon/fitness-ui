@@ -93,7 +93,7 @@ class ListSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TitleHeader(title),
+              title.isNotEmpty ? TitleHeader(title) : SizedBox(),
               AsyncValueWidget(
                 value: content,
                 data: (data) => ListSectionItem(
@@ -119,6 +119,7 @@ class ListSectionItem extends StatelessWidget {
       builder: (context, ref, child) {
         return Column(
             children: items
+                .sortLatestOnTop()
                 .map((routine) => Column(
                       children: [
                         Padding(

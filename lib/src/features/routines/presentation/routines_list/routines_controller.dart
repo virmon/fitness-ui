@@ -39,6 +39,7 @@ class RoutinesController extends AutoDisposeAsyncNotifier<List<Routine?>> {
       log(newRoutine!.id.toString());
       if (newRoutine.id != null) {
         isCreateSuccess = true;
+        ref.read(loadingProvider.notifier).state = false;
       }
       ref.read(routineServiceProvider).setActiveRoutine(newRoutine);
       return fetchRoutines();
@@ -71,6 +72,19 @@ class RoutinesController extends AutoDisposeAsyncNotifier<List<Routine?>> {
             .refreshActiveRoutine();
       }
       return fetchRoutines();
+    });
+  }
+
+  Future<void> toggleRoutinePrivacy(Routine routine) async {
+    await AsyncValue.guard(() async {
+      Routine routineCopy = routine.copyWith(isPrivate: !routine.isPrivate);
+      final updatedRoutine =
+          await ref.read(routineServiceProvider).createRoutine(routineCopy);
+      if (updatedRoutine != null) {
+        await ref
+            .read(activeRoutineControllerProvider.notifier)
+            .refreshActiveRoutine();
+      }
     });
   }
 

@@ -22,3 +22,7 @@ class ExerciseMenu {
   static const edit = 'Edit Exercise Sets';
   static const remove = 'Remove Exercise';
 }
+
+class QueryParam {
+  static const shouldShowExercises = 'shouldShowExercises';
+}
