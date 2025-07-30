@@ -19,3 +19,11 @@ extension RoutineExtension on Routine {
     return !isPrivate;
   }
 }
+
+extension ListExtension on List<Routine?> {
+  List sortLatestOnTop() {
+    List<Routine?> list = this;
+    list.sort((a, b) => b!.createdAt!.compareTo(a!.createdAt!));
+    return list;
+  }
+}
