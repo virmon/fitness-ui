@@ -1,6 +1,6 @@
 {
-    "name": "fitness_ui",
-    "short_name": "fitness_ui",
+    "name": "RepRight",
+    "short_name": "RepRight",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
