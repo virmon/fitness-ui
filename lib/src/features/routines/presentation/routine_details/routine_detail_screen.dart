@@ -115,8 +115,12 @@ class _RoutineDetailScreenState extends ConsumerState<RoutineDetailScreen> {
                                     MenuItem(
                                       RoutineMenu.add,
                                       Icons.add_circle_outline,
-                                      () => context
-                                          .pushNamed(AppRoute.search.name),
+                                      () => context.pushNamed(
+                                          AppRoute.search.name,
+                                          queryParameters: {
+                                            QueryParam.shouldShowExercises:
+                                                true.toString()
+                                          }),
                                     ),
                                     MenuItem(
                                       routine!.isPrivate

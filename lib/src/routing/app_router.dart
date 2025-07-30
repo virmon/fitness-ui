@@ -1,3 +1,4 @@
+import 'package:fitness_ui/src/constants/constants.dart';
 import 'package:fitness_ui/src/features/authentication/auth_gate.dart';
 import 'package:fitness_ui/src/features/authentication/data/firebase_auth_repository.dart';
 import 'package:fitness_ui/src/features/authentication/user_profile_screen.dart';
@@ -111,8 +112,16 @@ final goRouterProvider = Provider((ref) {
                 path: '/search',
                 name: AppRoute.search.name,
                 pageBuilder: (context, state) {
+                  final queryParam =
+                      state.uri.queryParameters[QueryParam.shouldShowExercises];
+                  bool shouldShowExercises = false;
+                  if (queryParam != null) {
+                    shouldShowExercises = bool.parse(queryParam);
+                  }
                   return NoTransitionPage(
-                    child: AppSearchScreen(),
+                    child: AppSearchScreen(
+                      shouldShowExercises: shouldShowExercises,
+                    ),
                   );
                 },
               ),

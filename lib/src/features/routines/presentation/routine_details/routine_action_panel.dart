@@ -92,7 +92,11 @@ class RoutineActionPanel extends StatelessWidget {
                               height: 60,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  context.pushNamed(AppRoute.search.name);
+                                  context.pushNamed(AppRoute.search.name,
+                                      queryParameters: {
+                                        QueryParam.shouldShowExercises:
+                                            true.toString()
+                                      });
                                 },
                                 style: ElevatedButton.styleFrom(
                                   minimumSize: Size(double.infinity, 50),
